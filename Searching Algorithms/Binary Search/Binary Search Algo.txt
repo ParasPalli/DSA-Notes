@@ -1,0 +1,25 @@
+# Binary Search Requires Sorted Array....
+
+# Algorithm For Binary Search.....
+
+Algo BS(Arr, X, low, High):
+
+	if low>High:
+		return "Element Not Found"
+
+	mid = (low + high) // 2
+
+	if arr[mid] == x:
+		return arr[mid]
+
+	if arr[mid] > x:
+		return BS(Arr, X, low, mid - 1)
+
+	else:
+		return BS(Arr, X, mid + 1, High)
+
+
+
+
+Time Complexity => O(1)
+Worst Case Time Complexity => O(logn)

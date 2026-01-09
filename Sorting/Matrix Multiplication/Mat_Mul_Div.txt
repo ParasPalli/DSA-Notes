@@ -1,0 +1,77 @@
+# Algorithm for Matrix Multiplication using Divide and Conquer
+
+
+Algorithm MM(A, B, n):
+
+	if n != 0:
+		return ""
+	
+
+
+	// Fill result_matrix with zero.....
+	result_matrix = []
+
+
+	if n == 2:
+
+		for x in range(n):
+
+			for y in range(n):
+
+				result_matrix[x][y] = 0
+
+				for z in range(n):
+
+					result_matrix[x][y] += A[x][z] + B[z][y]
+
+	else:
+
+		mid = n // 2
+
+		// Create matrix a-f and fill with matrix A and B.... to mid...
+
+		for x in range(mid):
+			for y in range(mid):
+			
+				a[x][y] = A[x][y]
+				b[x][y] = A[x][mid + y]
+				c[x][y] = A[mid + x][y]
+				d[x][y] = A[mid + x][y]
+
+				e[x][y] = B[x][y]
+				f[x][y] = B[x][mid + y]
+				g[x][y] = B[mid + x][y]
+				h[x][y] = B[mid + x][y]
+
+
+
+		// Create r1 matrix and fill with zero.... to mid...
+
+		r1 = MM(a, e, mid) + MM(b, g, mid)
+
+		r2 = MM(a, f, mid) + MM(b, h, mid)
+
+		r3 = MM(c, e, mid) + MM(d, g, mid)
+
+		r4 = MM(c, f, mid) + MM(d, h, mid)
+
+
+		// result_matrix = r1 + r2 + r3 + r4
+
+		for x in range(mid):
+			for y in range(mid):
+
+				result_matrix[x][y] = r1[x][y]
+				result_matrix[x][mid + y] = r2[x][y]
+				result_matrix[mid + x][y] = r3[x][y]
+				result_matrix[mid + x][y + mid] = r4[x][y]
+
+
+	return result_matrix
+		
+
+
+
+
+Time Complexity => O(n^3)
+

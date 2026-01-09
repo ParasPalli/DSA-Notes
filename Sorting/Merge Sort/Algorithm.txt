@@ -1,0 +1,72 @@
+# Algorithm of Merge Sort....
+
+
+Algo MergeSort(Arr, low, high):
+
+
+	if low < high:
+
+        
+		mid = (low + high) // 2
+		
+		// Creating Left and Right Arrays for Merging...
+		L = [:mid]
+		R = [mid:]
+		
+		// Left Sorting...
+		MergeSort(A, low, mid)
+
+		// Right Sorting...
+		MergeSort(A, mid + 1, high)
+
+		// Merging the Arrays...
+		Merge(arr, L, R)
+
+
+
+
+
+Algo Merge(arr, L, R):
+
+	i = j = k = 0
+
+	// Merging and Sorting the Left and Right Array...
+	
+	while(i < len(L) && j < len(R)):
+
+		if (L[i] < R[j]):
+		
+			arr[k] = L[i]
+
+			i += 1
+	
+		else:
+
+			arr[k] = R[j]
+	
+			j += 1
+
+		k += 1
+
+
+	// Addind Remaining Elements from Left Array...
+
+	while i < len(L):
+
+		arr[k] = L[i]
+		i += 1
+		k += 1
+
+	// Addind Remaining Elements from Left Array...
+
+	while j < len(R):
+
+		arr[k] = R[j]
+		j += 1
+		k += 1
+
+
+
+
+Time Complexity => O(nlogn)...
+

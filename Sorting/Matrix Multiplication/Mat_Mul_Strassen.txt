@@ -1,0 +1,60 @@
+// Matrix Multiplication using Strassen Method....
+
+
+Algorithm split(matrix):
+
+	row, col = matrix.shape
+	row2, col2 = row // 2, col // 2
+
+	return matrix[:row2, :col2], matrix[:row2, col2:], matrix[row2:, :col2], matrix[row2:, col2:]
+
+
+
+Algorithm MM(A, B):
+
+	if len(A) == 1:
+		return A * B
+
+	
+
+	a, b, c, d = split(A)
+	e, f, g, h = split(B)
+
+
+	p1 = MM(a, f - h)
+	p2 = MM(a + b, h)
+	p3 = MM(c + d, e)
+	p4 = MM(d, g - e)
+	p5 = MM(a + d, e + h)
+ 	p6 = MM(b - d, g + h)
+	p7 = MM(a - c, e + f)
+
+	c11 = p5 + p4 - p2 + p6
+	c12 = p1 + p2
+	c21 = p3 + p4
+	c22 = p1 + p5 - p3 - p7
+
+	c = np.vstack(np.hstack((c11, c12)), np.hstack((c21, c22)))
+
+
+	return c
+
+
+A = []
+B = []
+
+A = np.array(A)
+B = np.array(B)
+
+print(MM(A, B))
+
+
+
+
+
+
+# Time Complexity => O(n^2.81) or O(n^log7)
+
+
+
+

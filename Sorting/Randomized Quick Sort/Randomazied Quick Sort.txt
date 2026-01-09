@@ -1,0 +1,49 @@
+partition(arr[], lo, hi):
+
+   pivot = arr[lo]
+   i = lo - 1  // Initialize left index
+   j = hi + 1  // Initialize right index
+    
+    while(True)
+
+        // Find a value in left side greater than pivot
+
+           do
+              i = i + 1
+           while arr[i] < pivot
+
+
+        // Find a value in right side smaller than pivot
+
+           do
+              j = j - 1
+           while arr[j] > pivot
+
+           
+           if i >= j then  
+              return j
+
+        	else
+               swap arr[i] with arr[j]
+
+     end    while
+
+   
+partition_r(arr[], lo, hi):
+
+    r = Random number from lo to hi
+    Swap arr[r] and arr[lo]
+    return partition(arr, lo, hi)
+
+
+quicksort(arr[], lo, hi):
+
+    if lo < hi
+        p = partition_r(arr, lo, hi)
+        quicksort(arr, lo, p)
+        quicksort(arr, p+1, hi)
+
+
+
+Time Complexity => O(nlogn)
+Worst Time Complexity => O(n^2)
