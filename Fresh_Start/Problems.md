@@ -309,7 +309,7 @@ It's Breath-First-Search Problem
 - Left Side Smaller Number, Right Side Larger Number
 
 Iterate through problem and perform dfs or bfs search finding a '1' to mark neighbour as visited, and complete the island.\
-Visit each cell once during intial iteration and potentially twice when exploring BFS in each direction `[4 - up down left right no_diagonals]` and we do this for M * N vertices, O(4 * m * n) * O(M * N).\
+Visit each cell once during intial iteration and potentially twice when exploring BFS in each direction `[4 -> up down left right no_diagonals]` and we do this for M * N vertices, O(4 * m * n) * O(M * N).\
 It might help to think of worst case senerio - matrix is all '1', so we have to visit every cell and explore every adjecent cell.\
 For Space it could be stack/queue the entire grid if it is all 1s.
 
@@ -335,12 +335,15 @@ class Solution:
 
         if not grid: return 0
 
+        visitedPlace = set() # To avoid duplicate entries
+        count = 0
+
         def bfs(r, c):
             que = deque()
             visitedPlace.add((r, c))
             que.append((r, c))
 
-            while que:
+            while que: # Use this while loop is if conditions atlast to make is recersive [346, 347 line]
                 x, y = que.popleft()
 
                 for dirx, diry in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
@@ -352,9 +355,6 @@ class Solution:
                         visitedPlace.add((cellx, celly))
 
         
-
-        visitedPlace = set() # To avoid duplicate entries
-        count = 0
 
         for r in range(len(grid)):
             for c in range(len(grid[0])):
@@ -403,8 +403,8 @@ class Solution:
 
 ✅ **DFS (Depth-First Search)**
 
-- For BFS Queue is used [Iterative version is Good and easy] [Level-Wise]
-- For DFS Stack is user [Recursive version is Good and easy] [One-Sided]
+- For BFS Queue is used [Iterative version is Good and easy] [Level-Wise] [FIFO]
+- For DFS Stack is used [Recursive version is Good and easy] [One-Sided] [LIFO]
 
 | Style         | Mechanism                   | Why it's used                                                      |
 | ------------- | --------------------------- | ------------------------------------------------------------------ |
@@ -638,14 +638,14 @@ class Solution:
     def threeSum(self, nums: List[int]) -> List[List[int]]:
         result = []
 
-        # Sort to find duplications easily
+        # Sort to avoid duplications easily
         nums.sort()
 
         # If no negative numbers
         if nums[0] > 0: return []
 
         for i, val in enumerate(nums):
-            # Avoid duplicate results [As previous value is already evaluated]
+            # Avoid duplicate results [As same value is already evaluated]
             if i > 0 and val == nums[i - 1]: continue
 
             # Pointer to find remaining 2 sums
@@ -661,7 +661,7 @@ class Solution:
                     result.append([val, nums[x], nums[y]])
                     x += 1
 
-                    # remove duplicate values to avoid duplicate triplets
+                    # Avoid duplicate results [As same value is already evaluated]
                     while x < y and nums[x] == nums[x - 1]: x += 1
 
         return result
@@ -721,36 +721,7 @@ class Solution:
 
 
 ---
-###  11. Find All Numbers Disappeared in an Array [448]
-Given an array `nums` of `n` integers where `nums[i]` is in the range `[1, n]`, return an array of all the integers in the range `[1, n]` that do not appear in `nums`.
-
-
-*Example 1:*\
-Input: nums = [4,3,2,7,8,2,3,1]\
-Output: [5,6]
-
-*Example 2:*\
-Input: nums = [1,1]\
-Output: [2]
-
-
-**Code Solution**
-```python
-class Solution:
-    def findDisappearedNumbers(self, nums: List[int]) -> List[int]:
-        temp = set(nums)
-
-        result = []
-        for num in range(1, len(nums) + 1):
-            if num not in temp: result.append(num)
-        
-
-        return result
-```
-
-
----
-###  12. How Many Numbers Are Smaller Than the Current Number [1365]
+###  11. How Many Numbers Are Smaller Than the Current Number [1365]
 Given the array nums, for each `nums[i]` find out how many numbers in the array are smaller than it. That is, for each `nums[i]` you have to count the number of valid `j's` such that `j != i` and `nums[j] < nums[i]`.\
 Return the answer in an array.
 
@@ -758,7 +729,7 @@ Return the answer in an array.
 Input: nums = [8,1,2,2,3]\
 Output: [4,0,1,1,3]\
 Explanation:\
-For nums[0]=8 there exist four smaller numbers than it (1, 2, 2 and 3). \
+For nums[0]=8 there exist four smaller numbers than it (1, 2, 2 and 3).\
 For nums[1]=1 does not exist any smaller number than it.\
 For nums[2]=2 there exist one smaller number than it (1).\ 
 For nums[3]=2 there exist one smaller number than it (1). \
@@ -781,7 +752,7 @@ Output: [0,0,0,0]
 ```python
 class Solution:
     def smallerNumbersThanCurrent(self, nums: List[int]) -> List[int]:
-        sortedList = sorted(nums)
+        sortedList = sorted(nums) # Creates new list [nums.sort() modifies original list]
         numberMapping = {}
 
         for index, value in enumerate(sortedList):
@@ -797,7 +768,7 @@ class Solution:
 
 
 ---
-###  13. Longest Mountain in the Array [845]
+###  12. Longest Mountain in the Array [845]
 You may recall that an array arr is a mountain array if and only if:
 - `arr.length >= 3`
 - There exists some index i (0-indexed) with 0 < i < arr.length - 1 such that:
@@ -818,9 +789,9 @@ Explanation: There is no mountain.
 
 *Example 3:*\
 Input: arr = [0,1,2,3,4,5,4,3,2,1,0]\
-Output: 11\
+Output: 11
 
-**Solution:**\
+**Solution:**
 - Find the Peak and Than Slide from both slides
 
 **Code Solution**
@@ -857,7 +828,7 @@ class Solution:
 
 
 ---
-###  14. Contains Duplicate II [219]  {*Sliding-Window*}
+###  13. Contains Duplicate II [219]  {*Sliding-Window*}
 Given an integer array `nums` and an integer `k`, return `true` if there are two distinct indices `i` and `j` in the array such that `nums[i] == nums[j]` and `abs(i - j) <= k`.
 
 *Example 1:*\
@@ -872,7 +843,7 @@ Output: true
 Input: nums = [1,2,3,1,2,3], k = 2\
 Output: false
 
-**Solution:**\
+**Solution:**
 - Maintain the Window of `k` as `abs(i - j) <= k`, if we maintain the window of `k` then `|i - j|, |(i + 1) - (j + 1)|` ....
 
 **Code Solution**
@@ -906,7 +877,7 @@ class Solution:
 ```
 
 ---
-###  15. Minimum Absolute Difference [1200]
+###  14. Minimum Absolute Difference [1200]
 Given an array of distinct integers `arr`, find all pairs of elements with the minimum absolute difference of any two elements.
 
 Return a list of pairs in ascending order(with respect to pairs), each pair `[a, b]` follows
@@ -928,7 +899,7 @@ Input: arr = [3,8,-10,23,19,-4,-14,27]\
 Output: [[-14,-10],[19,23],[23,27]]
 
 **Explanation:**\
-- The `minimum absolute difference` is a minimum difference between two consecutive elements in the sorted array.
+- The `minimum absolute difference` is a minimum difference between `two consecutive elements` in the `sorted array`.
 
 **Code Solution**
 ```python
@@ -956,7 +927,383 @@ class Solution:
 ### 🧠 Python Negative and Positive Infinities
 `float('inf') > 1000000000000` evaluates to `True`
 
-- positive_infinity = float('inf')
-- negative_infinity = float('-inf')
+- positive_infinity = **float('inf')**
+- negative_infinity = **float('-inf')**
+
+
 ---
 ---
+###  15. Minimum Size Subarray Sum [209]
+Given an array of positive integers `nums` and a positive integer `target`, return the `minimal length` of a `subarray` whose sum is `greater than or equal to target`. If there is no such subarray, return 0 instead..
+
+*Example 1:*\
+Input: target = 7, nums = [2,3,1,2,4,3]\
+Output: 2\
+Explanation: The subarray [4,3] has the minimal length under the problem constraint.
+
+*Example 2:*\
+Input: target = 4, nums = [1,4,4]\
+Output: 1
+
+*Example 3:*\
+Input: target = 11, nums = [1,1,1,1,1,1,1,1]\
+Output: 0
+
+**Code Solution**
+```python
+class Solution:
+    def minSubArrayLen(self, target: int, nums: List[int]) -> int:
+        x = 0
+
+        total = 0
+        result = float('inf')
+
+        for y in range(len(nums)):
+            total += nums[y]
+
+            while total >= target:
+                result = min(result, y - x + 1)
+
+                total -= nums[x]
+                x += 1
+
+        if (result == float('inf')): return 0
+        return result
+```
+
+
+---
+###  16. Contains Duplicate II [219]  {*Bit Manipulation*}
+Given a `non-empty` array of integers `nums`, every element appears twice except for one. Find that single one.\
+You must implement a solution with a linear runtime complexity and use only constant extra space.
+
+*Example 1:*\
+Input: [2,2,1]\
+Output: 1
+```
+nums 2
+xor 2
+nums 2
+xor 0
+nums 1
+xor 1
+```
+
+*Example 2:*\
+Input: [4,1,2,1,2]\
+Output: 4
+```
+nums 4
+xor 4
+nums 1
+xor 5
+nums 2
+xor 7
+nums 1
+xor 6
+nums 2
+xor 4
+```
+
+*Example 3:*\
+Input: [1]\
+Output: 1
+```
+nums 1
+xor 1
+```
+
+**Code Solution**
+```python
+class Solution:
+    def singleNumber(self, nums: List[int]) -> int:
+        xor = 0
+        
+        for i in nums:
+            print('nums', i)
+            xor ^= i
+            print('xor', xor)
+
+        return xor
+```
+
+---
+---
+### 🧠 Bit Manipulation (Quick Reference)
+
+| Operator | Name        | Meaning                  | Example  | Result |
+| -------- | ----------- | ------------------------ | -------- | ------ |
+| `&`      | AND         | 1 if **both bits** are 1 | `5 & 3`  | `1`    |
+| `\|`     | OR          | 1 if **any bit** is 1    | `5 \| 3` | `7`    |
+| `^`      | XOR         | 1 if **bits differ**     | `5 ^ 3`  | `6`    |
+| `~`      | NOT         | Inverts all bits         | `~5`     | `-6`   |
+| `<<`     | Left Shift  | Shifts bits left (×2)    | `5 << 1` | `10`   |
+| `>>`     | Right Shift | Shifts bits right (÷2)   | `5 >> 1` | `2`    |
+
+
+---
+---
+###  17. Coin Change [322]  {*Dynamic Programing [Reusing the calculated subprogramming `Memoization`]*}
+You are given an integer array `coins` representing coins of different denominations and an integer amount representing a total `amount` of money.\
+Return the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return `-1`.\
+You may assume that you have an infinite number of each kind of coin.
+
+*Example 1:*\
+Input: coins = [1,2,5], amount = 11\
+Output: 3\
+Explanation: 11 = 5 + 5 + 1
+
+
+*Example 2:*\
+Input: coins = [2], amount = 3\
+Output: -1
+
+
+*Example 3:*\
+Input: coins = [1], amount = 0\
+Output: 0
+
+**Explanation:**\
+- dp[i] = minimum number of `coins` needed to make `amount i`.
+- dp[i] = best solution of smaller problem + cost of current choice
+
+#### 🎯 Real-Life Analogy 💰
+
+You want to pay ₹10
+You give a ₹5 note
+
+You already used 1 note
+
+Now you must find the minimum notes to pay the remaining ₹5
+
+👉 Total notes = 1 + best way to pay ₹5 {1 + dp[i - c]}
+
+
+**Code Solution**
+```python
+class Solution:
+    def coinChange(self, coins: List[int], amount: int) -> int:
+        dp = [amount + 1] * (amount + 1)
+        dp[0] = 0
+
+        for i in range(1, amount + 1):
+
+            for c in coins:
+                if (i - c) >= 0:
+                    
+                    dp[i] = min(dp[i], 1 + dp[i - c])
+
+        return dp[amount] if (dp[amount] != amount + 1) else -1 
+        # amount + 1 acts like ∞ (infinity) Check, which means no combination exists
+        # coins = [2], amount: 3
+```
+
+#### 💰 Coin Change — Visual Dry Run
+Example
+```
+coins = [1, 3, 4]
+amount = 6
+```
+
+##### 🧠 What dp[i] Means
+
+- Minimum number of coins needed to make amount i
+
+##### 🧱 Step 1: Initialize DP Table
+
+We use ∞ = amount + 1 = 7
+
+| Amount (i) | 0 | 1 | 2 | 3 | 4 | 5 | 6 |
+| ---------- | - | - | - | - | - | - | - |
+| dp[i]      | 0 | ∞ | ∞ | ∞ | ∞ | ∞ | ∞ |
+
+
+##### 🔁 Step 2: Fill the DP Table
+
+We go left → right (small → big)
+
+🔹 i = 1
+
+Try each coin:
+
+coin 1 → 1 + dp[0] = 1
+
+coin 3 → ❌ too big
+
+coin 4 → ❌ too big
+
+**| dp[1] = 1 |**
+
+🔹 i = 2
+
+coin 1 → 1 + dp[1] = 2
+
+coin 3 → ❌
+
+coin 4 → ❌
+
+**| dp[2] = 2 |**
+
+🔹 i = 3
+
+coin 1 → 1 + dp[2] = 3
+
+coin 3 → 1 + dp[0] = 1 ✅
+
+coin 4 → ❌
+
+**| dp[3] = 1 |**
+
+🔹 i = 4
+
+coin 1 → 1 + dp[3] = 2
+
+coin 3 → 1 + dp[1] = 2
+
+coin 4 → 1 + dp[0] = 1 ✅
+
+**| dp[4] = 1 |**
+
+🔹 i = 5
+
+coin 1 → 1 + dp[4] = 2
+
+coin 3 → 1 + dp[2] = 3
+
+coin 4 → 1 + dp[1] = 2
+
+**| dp[5] = 2 |**
+
+🔹 i = 6
+
+coin 1 → 1 + dp[5] = 3
+
+coin 3 → 1 + dp[3] = 2 ✅
+
+coin 4 → 1 + dp[2] = 3
+
+**| dp[6] = 2 |**
+
+##### ✅ Final DP Table
+
+| Amount | 0 | 1 | 2 | 3 | 4 | 5 | 6 |
+| ------ | - | - | - | - | - | - | - |
+| dp     | 0 | 1 | 2 | 1 | 1 | 2 | 2 |
+
+- 🎯 Answer: `dp[6] = 2`
+
+- (3 + 3)
+
+---
+---
+### 🌳 BFS & DFS with DP — Quick Notes
+🧠 Core Idea
+- DFS / BFS → explore states
+- DP (Memo / Visited) → avoid recomputing states
+- Explore first, remember results later
+
+## 1️⃣ DFS + DP (⭐ MOST COMMON & RECOMMENDED)
+✅ Use this when:
+- You are building combinations step by step
+- Choices depend on previous choices
+- You want all combinations or to check feasibility
+- The state can repeat
+
+Why DFS?
+- Natural include / exclude structure
+- Uses recursion stack instead of a queue
+- Easy to memoize states
+
+## 2️⃣ BFS + DP (Less common, but useful)
+✅ Use this when:
+- You want the shortest path
+- Levels matter (step-by-step depth)
+- Each step has equal cost
+
+Why BFS?
+- Explores level by level
+- Guarantees minimum steps
+
+## 🔑 Golden Summary
+- 🔥 Combinations → DFS
+- 🔥 Optimization → DP
+- 🔥 Minimum steps → BFS
+
+
+---
+---
+###  18. Climbing Stairs [70]
+You are climbing a staircase. It takes `n` steps to reach the top.\
+Each time you can either climb `1` or `2` steps. In how many distinct ways can you climb to the top?
+
+*Example 1:*\
+Input: n = 2\
+Output: 2\
+Explanation: There are two ways to climb to the top.
+1. 1 step + 1 step
+2. 2 steps
+
+
+*Example 2:*\
+Input: n = 3\
+Output: 3\
+Explanation: There are three ways to climb to the top.\
+1. 1 step + 1 step + 1 step
+2. 1 step + 2 steps
+3. 2 steps + 1 step
+
+
+**Code Solution**
+```python
+class Solution:
+    def climbStairs(self, n: int) -> int:
+        if n <= 2: return n
+
+        dp = [0] * (n + 1)
+        dp[0] = 0
+        dp[1] = 1
+        dp[2] = 2
+
+        for i in range(3, n + 1):
+            dp[i] = dp[i - 1] + dp[i - 2]
+
+        return dp[n]
+```
+
+
+---
+###  18. Maximum Subarray [53]
+Given an integer array `nums`, find the `subarray` with the largest sum, and return its sum.
+
+*Example 1:*\
+Input: nums = [-2,1,-3,4,-1,2,1,-5,4]\
+Output: 6\
+Explanation: The subarray [4,-1,2,1] has the largest sum 6.
+
+
+*Example 2:*\
+Input: nums = [1]\
+Output: 1\
+Explanation: The subarray [1] has the largest sum 1.
+
+*Example 3:*\
+Input: nums = [5,4,-1,7,8]
+Output: 23
+Explanation: The subarray [5,4,-1,7,8] has the largest sum 23.
+
+
+**Code Solution**
+```python
+class Solution:
+    def maxSubArray(self, nums: List[int]) -> int:
+        currentSum = 0
+        maxSum = float('-inf')
+
+        for n in nums:
+            if currentSum < 0: currentSum = 0
+            
+            currentSum += n
+            maxSum = max(currentSum, maxSum)
+
+        return maxSum
+```
