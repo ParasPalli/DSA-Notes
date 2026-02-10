@@ -1272,7 +1272,7 @@ class Solution:
 
 
 ---
-###  18. Maximum Subarray [53]
+###  19. Maximum Subarray [53]
 Given an integer array `nums`, find the `subarray` with the largest sum, and return its sum.
 
 *Example 1:*\
@@ -1306,4 +1306,333 @@ class Solution:
             maxSum = max(currentSum, maxSum)
 
         return maxSum
+```
+
+
+---
+###  20. Counting Bits [338]
+
+Given an integer `n`, return an array `ans` of length `n + 1` such that for each `i` (`0 <= i <= n`), `ans[i]` is the number of `1`'s in the binary representation of `i`.
+
+**Explanation:**
+- basically you have to find the number of `1`'s to create the `i`.
+
+*Example 1:*\
+Input: n = 2\
+Output: [0,1,1]\
+Explanation:\
+0 --> 0\
+1 --> 1\
+2 --> 10
+
+
+*Example 2:*\
+Input: n = 5\
+Output: [0,1,1,2,1,2]\
+Explanation:\
+0 --> 0\
+1 --> 1\
+2 --> 10\
+3 --> 11\
+4 --> 100\
+5 --> 101
+
+*Example 3:*\
+Input: n = 3\
+Output: [0,1,1,2]
+
+
+**Solution:**
+- basically you have to find the number of `1`'s to create the `i`.
+- You can see the repeating pattern
+- Taking the previous value and adding one to it gives the answer, as when the offset [power] changes the 1's reset and starts increasing again.
+
+![alt text](image.png)
+
+
+**Code Solution**
+```python
+class Solution:
+    def countBits(self, n: int) -> List[int]:
+        dp = [0] * (n + 1)
+        offset = 1
+
+        for i in range(1, n + 1):
+            if offset * 2 == i:
+                offset = i
+
+            dp[i] = 1 + dp[i - offset]
+
+        return dp
+```
+
+
+---
+### 21. Range Sum Query - Immutable [303]
+
+Given an integer array nums, handle multiple queries of the following type:\
+Calculate the sum of the elements of nums between indices left and right inclusive where left <= right.\
+Implement the `NumArray` class:
+- `NumArray(int[] nums)` Initializes the object with the integer array `nums`.
+- `int sumRange(int left, int right)` Returns the sum of the elements of `nums` between indices `left` and `right` inclusive (i.e. `nums[left] + nums[left + 1] + ... + nums[right]`).
+
+
+*Example 1:*\
+Input:\
+["NumArray", "sumRange", "sumRange", "sumRange"]\
+[[[-2, 0, 3, -5, 2, -1]], [0, 2], [2, 5], [0, 5]]
+
+Output:\
+[null, 1, -1, -3]
+
+Explanation:\
+NumArray numArray = new NumArray([-2, 0, 3, -5, 2, -1]);\
+numArray.sumRange(0, 2); // return (-2) + 0 + 3 = 1\
+numArray.sumRange(2, 5); // return 3 + (-5) + 2 + (-1) = -1\
+numArray.sumRange(0, 5); // return (-2) + 0 + 3 + (-5) + 2 + (-1) = -3\
+
+
+**Code Solution**
+```python
+class NumArray:
+    num = []
+    def __init__(self, nums: List[int]):
+        self.nums = nums
+
+    def sumRange(self, left: int, right: int) -> int:
+        return sum(self.nums[left:right + 1])
+
+
+# --- Or Using Prefix Sum -----
+class NumArray:
+    num = []
+    def __init__(self, nums: List[int]):
+        self.prefixSum = [0]
+        for num in nums: self.prefixSum.append(self.prefixSum[-1] + num)
+
+    def sumRange(self, left: int, right: int) -> int:
+        return self.prefixSum[right + 1] - self.prefixSum[left]
+
+# nums[-1] -> Last Element
+# Why right + 1 -> First element is zero
+```
+
+---
+---
+### Back Tracking
+
+BackTracking is a problem - solving algorithmic technique that involves finding a solution incrementally by trying different options and undoing them if they lead to a dead end.
+
+![alt text](image-1.png)
+
+#### Permutations:
+- The number of ways to arrange things
+- order matters
+
+#### Combinations:
+- The number of ways to choose things
+- order doesn't matter
+
+
+---
+---
+### 22. Last Letter Permutation [784]  {*BackTracking*}
+Given a string `s`, you can transform every letter individually to be lowercase or uppercase to create another string.\
+Return a list of all possible strings we could create. Return the output in `any order`.
+
+*Example 1:*\
+Input: s = "a1b2"\
+Output: ["a1b2","a1B2","A1b2","A1B2"]
+
+
+*Example 2:*\
+Input: s = "3z4"\
+Output: ["3z4","3Z4"]
+
+
+**Code Solution**
+```python
+# Iterative Approach
+class Solution:
+    def letterCasePermutation(self, s: str) -> List[str]:
+        # As '' is present than it will iterate once and a in added to temp
+        output = ['']
+
+        for c in s:
+            tmp = []
+            if c.isalpha():
+                for o in output:
+                    tmp.append(o + c.lower())
+                    tmp.append(o + c.upper())
+            else:
+                for o in output:
+                    tmp.append(o + c)
+
+            output = tmp
+
+        return output
+
+# Recursion
+class Solution:
+    def letterCasePermutation(self, s: str) -> List[str]:
+        res = []
+
+        def backtracking(sub = '', i = 0):
+            if (len(sub) == len(s)):
+                res.append(sub)
+                return
+
+            if s[i].isalpha():
+                backtracking(sub + s[i].swapcase(), i + 1)
+            backtracking(sub + s[i], i + 1)
+
+        backtacking()
+        return res
+   
+```
+
+**Dry Run Iterative**
+
+*Input: a1b2*
+
+*Output:*
+```
+['']
+[[A], [a]] = o
+[[A1], [a1]] = o
+[[A1B], [a1b]] = o
+...
+```
+
+---
+### 23. Subsets [78]
+Given an integer array `nums` of unique elements, return all possible `subsets` (the power set {all combinations including '[]'}).\
+The solution set `must not` contain duplicate subsets. Return the solution in `any order`.
+
+*Example 1:*\
+Input: nums = [1,2,3]\
+Output: [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+
+*Example 2:*\
+Input: nums = [0]\
+Output: [[],[0]]
+
+
+**Code Solution**
+```python
+class Solution:
+    def subsets(self, nums: List[int]) -> List[List[int]]:
+
+        def backtracking(start, path):
+
+            # path[:] creates a new list
+            # Otherwise all references would change later
+            result.append(path[:])
+
+            for i in range(start, len(nums)):
+                path.append(nums[i])
+                backtracking(i + 1, path) # Continue to build subset from next element
+                path.pop()
+
+        result = []
+        backtracking(0, [])
+        return result
+```
+
+**Decision Tree**
+
+*For*
+```
+nums = [1,2,3]
+```
+
+*Tree*
+```
+[]
+├── [1]
+│   ├── [1,2]
+│   │   ├── [1,2,3]
+│   │   └── backtrack
+│   ├── [1,3]
+│   └── backtrack
+├── [2]
+│   ├── [2,3]
+│   └── backtrack
+├── [3]
+└── backtrack
+```
+
+*Call Stack*
+```
+backtracking(0, [])
+ └── backtracking(1, [1])
+      └── backtracking(2, [1,2])
+           └── backtracking(3, [1,2,3])
+      └── backtracking(3, [1,3])
+ └── backtracking(2, [2])
+      └── backtracking(3, [2,3])
+ └── backtracking(3, [3])
+```
+
+*Time & Space Complexity*
+```
+Let n = len(nums)
+
+Number of subsets:
+2^n
+
+Time:  O(2^n)
+Space: O(n) recursion depth
+```
+
+**Core Backtracking Template {This Pattern appears everywhere}**
+```python
+def backtrack(start, path):
+    save(path)
+
+    for i in range(start, n):
+        choose(i)
+        backtrack(i+1, path)
+        unchoose(i)
+
+#
+# You are walking a tree of decisions, and at every node you record the path so far, then try all possible next steps, and undo after returning.
+```
+
+
+---
+### 24. Combinations [77]
+Given two integers `n` and `k`, return all possible combinations of `k` numbers chosen from the range `[1, n]`.\
+You may return the answer in any order.
+
+*Example 1:*\
+Input: n = 4, k = 2\
+Output: [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]\
+Explanation: There are 4 choose 2 = 6 total combinations.\
+Note that combinations are unordered, i.e., [1,2] and [2,1] are considered to be the same combination.
+
+*Example 2:*\
+Input: n = 1, k = 1\
+Output: [[1]]\
+Explanation: There is 1 choose 1 = 1 total combination.
+
+
+**Code Solution**
+```python
+class Solution:
+    def combine(self, n: int, k: int) -> List[List[int]]:
+
+        def backTracking(start, path):
+            if len(path) == k:
+                result.append(path[:])
+                return
+
+            for i in range(start, n + 1):
+                path.append(i)
+                backTracking(i + 1, path)
+                path.pop()
+
+        result = []
+        backTracking(1, []) # Because Range starts with zero
+        return result
 ```
