@@ -1636,3 +1636,314 @@ class Solution:
         backTracking(1, []) # Because Range starts with zero
         return result
 ```
+
+
+---
+### 25. Permutations [46]
+Given an array `nums` of distinct integers, return all the possible `permutations`. You can return the answer in `any order`.
+
+*Example 1:*\
+Input: nums = [1,2,3]\
+Output: [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+
+*Example 2:*\
+Input: nums = [0,1]\
+Output: [[0,1],[1,0]]
+
+*Example 3:*\
+Input: nums = [1]\
+Output: [[1]]
+
+**Code Solution**
+```python
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        def backTracking(start, end):
+            if start == end:
+                result.append(nums[:])
+                return
+
+            for i in range(start, end):
+                nums[start], nums[i] = nums[i], nums[start]
+                backTracking(start + 1, end)
+                nums[start], nums[i] = nums[i], nums[start] # reversing the swap
+
+        result = []
+        backTracking(0, []) 
+        return result
+```
+
+---
+---
+### Template (Combinations / Subsets)
+
+```python
+def backtrack(start, path):
+    if condition:
+        save(path)
+        return
+
+    for i in range(start, n):
+        path.append(nums[i])
+        backtrack(i + 1, path)
+        path.pop()
+```
+
+### Template (Permutations - visited array)
+```python
+def backtrack(path):
+    if len(path) == n:
+        save(path)
+        return
+
+    for i in range(n):
+        if used[i]: continue
+        used[i] = True
+        path.append(nums[i])
+        backtrack(path)
+        path.pop()
+        used[i] = False
+```
+
+### OR swap-based:
+```python
+def backtrack(start):
+    if start == n:
+        save(nums)
+        return
+
+    for i in range(start, n):
+        swap(start, i)
+        backtrack(start+1)
+        swap back
+```
+
+
+---
+---
+### 26. Middle of the Linked List [876] {*Linked Lists*}
+Given the `head` of a singly linked list, return the middle node of the linked list.
+If there are two middle nodes, return `the second middle` node.
+
+*Example 1:*\
+Input: head = [1,2,3,4,5]\
+Output: [3,4,5]\
+Explanation: The middle node of the list is node 3.
+
+*Example 2:*\
+Input: head = [1,2,3,4,5,6]\
+Output: [4,5,6]\
+Explanation: Since the list has two middle nodes with values 3 and 4, we return the second one.
+
+
+
+**Code Solution**
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+class Solution:
+    def middleNode(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        slow = fast = head
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+
+        return slow
+```
+
+---
+---
+### Fast & Slow Pointer (Tortoise & Hare).
+
+#### The Core Idea (in one line)
+- One pointer moves 1 step, another moves 2 steps.
+- When the fast one reaches the end, the slow one is at the middle.
+
+How this works for even and uneven lists
+- For Uneven the slow pointer points after middle iteration as the condition is false after second iteration
+
+![alt text](image-2.png)
+
+
+---
+---
+### 27. Linked List Cycle [141]
+Given `head`, the head of a linked list, determine if the linked list has a cycle in it.\
+There is a cycle in a linked list if there is some node in the list that can be reached again by continuously following the `next` pointer. Internally, `pos` is used to denote the index of the node that tail's `next` pointer is connected to. **Note that `pos` is not passed as a parameter**.\
+Return `true` if there is a cycle in the linked list. Otherwise, return `false`.\
+*Note: pos = -1 => No Cycle*
+
+*Example 1:*\
+![alt text](image-3.png)
+
+Input: head = [3,2,0,-4], pos = 1\
+Output: true\
+Explanation: There is a cycle in the linked list, where the tail connects to the 1st node (0-indexed).
+
+*Example 2:*\
+![alt text](image-4.png)
+
+Input: head = [1,2], pos = 0\
+Output: true\
+Explanation: There is a cycle in the linked list, where the tail connects to the 0th node.
+
+*Example 3:*\
+![alt text](image-5.png)
+
+Input: head = [1], pos = -1
+Output: false
+Explanation: There is no cycle in the linked list.
+
+
+**Explanation:**\
+As If their is cycle both will eventually will be same
+
+**Code Solution**
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    def hasCycle(self, head: Optional[ListNode]) -> bool:
+        slow = fast = head
+
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+
+            if slow == fast: return True
+
+        return False
+```
+
+
+### 27. Reverse Linked List [206]
+Given the `head` of a singly linked list, reverse the list, and return the reversed list.
+
+*Example 1:*\
+Input: head = [1,2,3,4,5]
+Output: [5,4,3,2,1]
+
+*Example 2:*\
+Input: head = [1,2]
+Output: [2,1]
+
+*Example 3:*\
+Input: head = []
+Output: []
+
+
+**Explanation:**\
+- Changing the Current Node Previous and Next at a Time and repeating the Process
+- prevNode => None <- CurrenNode <- nextNode <= PrevNode [Update the PrevNode]
+
+**Code Solution**
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+
+class Solution:
+    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        prevNode = None
+        currentNode = head
+
+        while currentNode:
+            nextNode = currentNode.next
+            currentNode.next = prevNode
+
+            prevNode = currentNode
+            currentNode = nextNode
+
+        return prevNode
+
+# ------ Or -------
+
+class Solution:
+    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        prevNode = None
+
+        while head:
+            next = head.next
+            head.next = prevNode
+            prevNode = head
+            head = next
+
+        return prevNode
+```
+
+
+---
+### 28. Remove Linked List Elements [206]
+Given the `head` of a linked list and an integer `val`, remove all the nodes of the linked list that has `Node.val == val`, and return the new head.
+
+*Example 1:*\
+Input: head = [1,2,6,3,4,5,6], val = 6\
+Output: [1,2,3,4,5]
+
+*Example 2:*\
+Input: head = [], val = 1\
+Output: []
+
+*Example 3:*\
+Input: head = [7,7,7,7], val = 7\
+Output: []
+
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+
+# My:
+class Solution:
+    def removeElements(self, head: Optional[ListNode], val: int) -> Optional[ListNode]:
+        prevNode = None
+        currentNode = head
+
+        while currentNode:
+            if currentNode.val == val:
+                if prevNode == None:
+                    head = head.next
+                    currentNode = head
+                    continue
+                else:
+                    prevNode.next = currentNode.next
+                    currentNode = prevNode
+
+            prevNode = currentNode
+            currentNode = currentNode.next
+
+        return head
+
+# ---- OR ----
+
+class Solution:
+    def removeElements(self, head: Optional[ListNode], val: int) -> Optional[ListNode]:
+        if not head: return None
+
+        curr = head
+
+        # Next is used as we are assuming that first element might be val
+        while curr.next:
+            if curr.next.val == val:
+                curr.next = curr.next.next
+            else:
+                curr = curr.next
+
+        if head.val == val: return head.next
+
+        return head
+```
+
+
+---
