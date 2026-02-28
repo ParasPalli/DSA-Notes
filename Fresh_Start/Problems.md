@@ -372,16 +372,16 @@ class Solution:
 
         if not grid: return 0
 
-        def bfs(r, c):
+        def dfs(r, c):
             # Recursive Approach
             if (r < 0 or r >= rows or c < 0 or c >= cols or grid[r][c] == '0'): return
 
             grid[r][c] = '0' # Mark Visited or Sink Island
 
-            bfs(r + 1, c)
-            bfs(r - 1, c)
-            bfs(r, c + 1)
-            bfs(r, c - 1)
+            dfs(r + 1, c)
+            dfs(r - 1, c)
+            dfs(r, c + 1)
+            dfs(r, c - 1)
         
         count = 0
         rows = len(grid)
@@ -390,7 +390,7 @@ class Solution:
         for r in range(rows):
             for c in range(cols):
                 if grid[r][c] == '1':
-                    bfs(r, c) # Mark Sink [Visited]
+                    dfs(r, c) # Mark Sink [Visited]
                     count += 1 # Increase Island Count
 
         return count
@@ -430,7 +430,7 @@ class Solution:
 | Algorithm | Preferred Method                                           | Data Structure                             |
 | --------- | ---------------------------------------------------------- | ------------------------------------------ |
 | **DFS**   | ✅ Recursive (easy), 🟡 Iterative (safe for deep recursion) | Stack (explicit or implicit via recursion) |
-| **BFS**   | ✅ Iterative only (queue-based)                             | Queue (`deque`)                            |
+| **BFS**   | ✅ Iterative only (queue-based)                             | Queue (`deque`) [Because will give all nodes at the same level]                           |
 
 
 🎯 **Bonus Tip:**
@@ -1897,6 +1897,7 @@ Output: []
 Input: head = [7,7,7,7], val = 7\
 Output: []
 
+**Code Solution**
 ```python
 # Definition for singly-linked list.
 # class ListNode:
@@ -1947,3 +1948,1474 @@ class Solution:
 
 
 ---
+### 29. Reverse Linked List II [92]
+Given the `head` of a singly linked list and two integers `left` and `right` where `left <= right`, reverse the nodes of the list from position `left` to position `right`, and return the reversed list.
+
+*Example 1:*\
+Input: head = [1,2,3,4,5], left = 2, right = 4\
+Output: [1,4,3,2,5]
+
+*Example 2:*\
+Input: head = [1,2]\
+Output: false
+
+*Example 3:*\
+Input: head = [1,1,2,1]\
+Output: false
+
+**Explanation Image**
+![alt text](image-6.png)
+
+
+**Code Solution**
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+class Solution:
+    def reverseBetween(self, head: Optional[ListNode], left: int, right: int) -> Optional[ListNode]:
+
+        dummyHead = ListNode(-1, head)
+
+        # Stage 1 [Updating CurrentNode to Left]
+        leftPrev, currentNode = dummyHead, head
+        for i in range(left - 1):
+            leftPrev, currentNode = currentNode, currentNode.next
+
+        # Stage 2 [Reversing from Left to Right]
+        prev = None
+        for i in range(right - left + 1):
+            nextPointer = currentNode.next
+            currentNode.next = prev
+            prev, currentNode = currentNode, nextPointer
+
+        # Stage 3 [Arranging the Left Pointer and Right Pointer]
+        leftPrev.next.next = currentNode
+        leftPrev.next = prev
+        
+        return dummyHead.next
+```
+
+
+---
+### 30. Palindrome Linked List [234]
+Given the `head` of a singly linked list, return `true` if it is a `palindrome` or fals`e otherwise.
+
+*Example 1:*\
+Input: head = [1,2,2,1]\
+Output: true
+
+*Example 2:*\
+Input: head = [5], left = 1, right = 1
+Output: [5]
+
+**Explanation Image**
+![alt text](image-7.png)
+
+
+**Code Solution**
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+class Solution:
+    def isPalindrome(self, head: Optional[ListNode]) -> bool:
+
+        # Stage 1: [Find Middle]
+        fast = slow = head
+        while fast and fast.next:
+            fast = fast.next.next
+            slow = slow.next
+
+        # Stage 2: [Reverse the Right Side of List]
+        prev = None
+        while slow:
+            nextNode = slow.next
+            slow.next = prev
+
+            prev = slow
+            slow = nextNode
+
+        # Stage 3: [Check Palindrome with two pointers]
+        left = head
+        right = prev
+
+        while right: # [As left is connect to the rightSide we haven't unlinked it]
+            if left.val != right.val:
+                return False
+
+            left = left.next
+            right = right.next
+
+        return True
+```
+
+
+---
+### 31. Merge Two Sorted Lists [21]
+You are given the heads of two sorted linked lists `list1` and `list2`.\
+Merge the two lists into one `sorted` list. The list should be made by splicing together the nodes of the first two lists.\
+Return the head of the merged linked list.
+
+*Example 1:*\
+Input: list1 = [1,2,4], list2 = [1,3,4]\
+Output: [1,1,2,3,4,4]
+
+*Example 2:*\
+Input: list1 = [], list2 = []\
+Output: []
+
+*Example 3:*\
+Input: list1 = [], list2 = [0]\
+Output: [0]
+
+**Code Solution**
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+class Solution:
+    def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
+        
+        finalResult = currentNode = ListNode()
+
+        while list1 and list2:
+            if list1.val <= list2.val:
+                currentNode.next = list1
+                list1 = list1.next
+                
+            else:
+                currentNode.next = list2
+                list2 = list2.next
+
+            currentNode = currentNode.next
+
+        if list1: currentNode.next = list1
+        elif list2: currentNode.next = list2
+
+        return finalResult.next
+```
+
+
+---
+### 32. Min Stack [155]
+Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.
+
+Implement the `MinStack` class:
+- `MinStack()` initializes the stack object.
+- `void push(int val)` pushes the element `val` onto the stack.
+- `void pop()` removes the element on the top of the stack.
+- `int top()` gets the top element of the stack.
+- `int getMin()` retrieves the minimum element in the stack.
+
+You must implement a solution with `O(1)` time complexity for each function.
+
+*Example 1:*\
+Input:\
+["MinStack","push","push","push","getMin","pop","top","getMin"]\
+[[],[-2],[0],[-3],[],[],[],[]]\
+
+Output:\
+[null,null,null,null,-3,null,0,-2]
+
+Explanation:\
+MinStack minStack = new MinStack();\
+minStack.push(-2);\
+minStack.push(0);\
+minStack.push(-3);\
+minStack.getMin(); # return -3\
+minStack.pop();\
+minStack.top();    # return 0\
+minStack.getMin(); # return -2
+
+**Code Solution**
+```python
+# Your MinStack object will be instantiated and called as such:
+# obj = MinStack()
+# obj.push(val)
+# obj.pop()
+# param_3 = obj.top()
+# param_4 = obj.getMin()
+
+# --- MyCode getMin is O(n) -----
+class MinStack:
+    def __init__(self):
+        self.valueList = []
+        self.currentMin = float('inf')
+
+    def push(self, val: int) -> None:
+        self.valueList.append(val)
+        self.currentMin = min(val, self.currentMin)
+
+    def pop(self) -> None:
+        self.valueList.pop() 
+
+    def top(self) -> int:
+        return self.valueList[-1]
+
+    def getMin(self) -> int:
+        return self.currentMin
+
+#
+class MinStack:
+    def __init__(self):
+        self.stack = []
+        # Min stack just for keep track of minimum so far
+        self.minStack = []
+        
+
+    def push(self, val: int) -> None:
+        self.stack.append(val)
+        # For minstack, if val is less than minimum, append to top, else 
+        val = min(val, self.minStack[-1] if self.minStack else val) # if esist minStack or val
+        self.minStack.append(val)
+
+    def pop(self) -> None:
+        self.stack.pop()
+        self.minStack.pop()
+
+
+    def top(self) -> int:
+        return self.stack[-1]
+
+    def getMin(self) -> int:
+        return self.minStack[-1]
+
+#
+class MinStack:
+    def __init__(self):
+        self.stack = []
+
+    def push(self, val: int) -> None:
+        if not self.stack:
+            currentMin = val
+        else:
+            currentMin = min(val, self.stack[-1][1])
+
+        self.stack.append((val, currentMin)) #[(-2, -2), (-3, -3)]
+
+    def pop(self) -> None:
+        self.stack.pop() # [(-2, -2)]
+
+    def top(self) -> int:
+        return self.stack[-1][0]
+
+    def getMin(self) -> int:
+        return self.minStack[-1][1] # -2, As -3 is Popped
+```
+
+
+---
+### 33. Valid Parentheses [20]
+Given a string s containing just the characters `'('`, `')'`, `'{'`, `'}'`, `'['` and `']'`, determine if the input string is valid.
+
+An input string is valid if:
+- Open brackets must be closed by the same type of brackets.
+- Open brackets must be closed in the correct order.
+- Every close bracket has a corresponding open bracket of the same type.
+
+*Example 1:*\
+Input: s = "()"\
+Output: true
+
+*Example 2:*\
+Input: s = "()[]{}"\
+Output: true
+
+*Example 3:*\
+Input: s = "(]"\
+Output: false
+
+*Example 4:*\
+Input: s = "([])"\
+Output: true
+
+*Example 5:*\
+Input: s = "([)]"\
+Output: false
+
+**Code Solution**
+```python
+class Solution:
+    def isValid(self, s: str) -> bool:
+        stack = []
+        hashMap = {')':'(', '}':'{', ']':'['}
+
+        for element in s:
+            if stack and (element in hashMap and stack[-1] == hashMap[element]):
+                stack.pop()
+            else:
+                stack.append(element)
+
+        return not stack
+
+# ----- Or ------
+class Solution:
+    def isValid(self, s: str) -> bool:
+        if len(s) == 1:
+            return False
+        
+        stk = []
+        
+        for ch in s:
+            if ch in '([{':
+                stk.append(ch)
+                continue
+            
+            if not stk:
+                return False
+            
+            brk = stk[-1]
+            if (brk == '(' and ch == ')') or \
+               (brk == '[' and ch == ']') or \
+               (brk == '{' and ch == '}'):
+                stk.pop()
+            else:
+                return False
+        
+        return len(stk) == 0
+```
+
+
+---
+### 34. Evaluate Reverse Polish Notation [150]
+You are given an array of strings `tokens` that represents an arithmetic expression in a Reverse Polish Notation.\
+Evaluate the expression. Return an integer that represents the value of the expression.\
+
+**Note** that:
+- The valid operators are `'+'`, `'-'`, `'*'`, and `'/'`.
+- Each operand may be an integer or another expression.
+- The division between two integers always **truncates toward zero**.
+- There will not be any division by zero.
+- The input represents a valid arithmetic expression in a reverse polish notation.
+- The answer and all the intermediate calculations can be represented in a **32-bit** integer.
+
+*Example 1:*\
+Input: tokens = ["2","1","+","3","*"]\
+Output: 9\
+Explanation: ((2 + 1) * 3) = 9
+
+*Example 2:*\
+Input: tokens = ["4","13","5","/","+"]\
+Output: 6\
+Explanation: (4 + (13 / 5)) = 6
+
+*Example 3:*\
+Input: tokens = ["10","6","9","3","+","-11","*","/","*","17","+","5","+"]\
+Output: 22\
+Explanation: ((10 * (6 / ((9 + 3) * -11))) + 17) + 5\
+= ((10 * (6 / (12 * -11))) + 17) + 5\
+= ((10 * (6 / -132)) + 17) + 5\
+= ((10 * 0) + 17) + 5\
+= (0 + 17) + 5\
+= 17 + 5\
+= 22
+
+**Code Solution:**
+```python
+class Solution:
+    def evalRPN(self, tokens: List[str]) -> int:
+        stack = []
+
+        for num in tokens:
+            if num not in '+-*/':
+                stack.append(int(num))
+            else:
+                x, y = stack.pop(), stack.pop()
+
+                if num == '+':
+                    stack.append(y + x)
+                elif num == '*':
+                    stack.append(y * x)
+                elif num == '-':
+                    stack.append(y - x)
+                elif num == '/':
+                    stack.append(int(y / x))
+
+        return stack.pop()
+```
+
+
+---
+### 35. Given a Stack of Integers sort them in ascending or decending Order.
+
+```python
+# It's Decending Order Code
+def sortStack(stack):
+    tmpStack = []
+
+    while stack:
+        num = stack.pop()
+
+        while tmpStack and tempStack[-1] < num:
+            stack.append(tmpStack.pop())
+
+        tmpStack.append(num)
+
+    return tmpStack
+```
+
+
+---
+### 34. Implement Stack using Queues [225]
+Implement a last-in-first-out (LIFO) stack using only two queues. The implemented stack should support all the functions of a normal stack (`push`, `top`, `pop`, and `empty`).
+
+Implement the `MyStack` class:
+- `void push(int x)` Pushes element x to the top of the stack.
+- `int pop()` Removes the element on the top of the stack and returns it.
+- `int top()` Returns the element on the top of the stack.
+- `boolean empty()` Returns `true` if the stack is empty, `false` otherwise.
+
+Notes:
+- You must use `only` standard operations of a queue, which means that only `push to back`, `peek/pop from front`, `size` and `is empty` operations are valid.
+- Depending on your language, the queue may not be supported natively. You may simulate a queue using a list or deque (double-ended queue) as long as you use only a queue's standard operations.
+
+*Example 1:*\
+Input: ["MyStack", "push", "push", "top", "pop", "empty"]\
+[[], [1], [2], [], [], []]
+
+Output:\
+[null, null, null, 2, 2, false]
+
+Explanation:\
+MyStack myStack = new MyStack();\
+myStack.push(1);\
+myStack.push(2);\
+myStack.top();   # return 2\
+myStack.pop();   # return 2\
+myStack.empty(); # return False\
+
+**Code Solution:**
+```python
+class MyStack:
+
+    def __init__(self):
+        self.stack = deque()
+
+    def push(self, x: int) -> None:
+        self.stack.append(x)
+
+    def pop(self) -> int:
+        # Let to Last Element to Come Front 
+        # => [3, 1, 2] <- 2 will be automatically last element after poping 3
+        # That's the reason we used -1 other it will be same list again after rotating
+        for num in range(len(self.stack) - 1):
+            self.push(self.stack.popleft())
+
+        return self.stack.popleft()
+
+    def top(self) -> int:
+        return self.stack[-1]
+
+    def empty(self) -> bool:
+        return len(self.stack) == 0
+        
+
+
+# Your MyStack object will be instantiated and called as such:
+# obj = MyStack()
+# obj.push(x)
+# param_2 = obj.pop()
+# param_3 = obj.top()
+# param_4 = obj.empty()
+```
+
+
+---
+### 35. Time Needed to Buy Tickets [2073]
+There are `n` people in a line queuing to buy tickets, where the `0th` person is at the front of the line and the `(n - 1)th` person is at the back of the line.
+
+You are given a 0-indexed integer array `tickets` of length `n` where the number of tickets that the ith person would like to buy is `tickets[i]`.
+
+Each person takes `exactly 1 second` to buy a ticket. A person can only buy `1 ticket at a time` and has to go back to `the end` of the line (which happens `instantaneously`) in order to buy more tickets. If a person does not have any tickets left to buy, the person will `leave` the line.
+
+Return the `time taken` for the person `initially` at position `k` (0-indexed) to finish buying tickets.
+
+
+*Example 1:*\
+Input: tickets = [5,1,1,1], k = 0\
+Output: 8
+
+*Example 2:*\
+Input: tickets = [2,3,2], k = 2\
+Output: 6
+
+
+**Code Solution:**
+```python
+class Solution:
+    def timeRequiredToBuy(self, tickets: List[int], k: int) -> int:
+        res = 0
+
+        for i in range(len(tickets)):
+            if i <= k: # Before K
+                # seconds needed is equal to k
+                res += min(tickets[i], tickets[k])
+            else: # After K
+                # seconds needed is (k - 1)
+                res += min(tickets[i], tickets[k] - 1)
+
+        return res
+```
+
+
+---
+### 36. Reserve the Queue using Stack
+
+**Code Solution:**
+```python
+def reverse_first_k_using_stack_in_queue(k, q):
+    stack = []
+
+    # put first k elements in stack
+    for i in range(k):
+        stack.append(q.popleft())
+
+    # push the contents of the stack to the back of the queue
+    # will be added in reverse due to stack LIFO
+    while stack:
+        q.append(stack.pop())
+    
+    # pop and push elements in queue
+    # that should come after first k elements in queue
+    for i in range(len(q) - k):
+        q.append(q.popleft())
+
+    return q
+
+reverse_first_k_using_stack_in_queue(3, deque([1, 2, 3, 4, 5]))
+# Output: [3, 2, 1, 4, 5]
+```
+
+
+---
+### 37. Average of Levels in Binary Tree [637] {*Binary Tree*}
+Given the `root` of a binary tree, return the average value of the nodes on each level in the form of an array. Answers within `10^-5` of the actual answer will be accepted.
+
+
+*Example 1:*\
+![alt text](image-8.png)\
+Input: root = [3,9,20,null,null,15,7]\
+Output: [3.00000,14.50000,11.00000]
+
+*Example 2:*\
+![alt text](image-9.png)\
+Input: root = [3,9,20,15,7]\
+Output: [3.00000,14.50000,11.00000]
+
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def averageOfLevels(self, root: Optional[TreeNode]) -> List[float]:
+        que = deque([root]) # len(que) => 1
+        result = []
+
+        while que:
+            level = []
+            # Works on the initial len, after adding doesn't work here, so stops at len => 1
+            for x in range(len(que)):
+                node = que.popleft()
+                level.append(node.val)
+
+                if node.left: que.append(node.left)
+                if node.right: que.append(node.right)
+
+            result.append(sum(level) / len(level))
+
+        return result
+```
+
+
+---
+### 38. Minimum Depth of Binary Tree [111]
+Given a binary tree, find its minimum depth.\
+The minimum depth is the number of nodes along the shortest path from the root node down to the nearest leaf node.\
+Note: A leaf is a node with no children.
+
+
+*Example 1:*\
+![alt text](image-10.png)\
+Input: root = [3,9,20,null,null,15,7]\
+Output: 2
+
+*Example 2:*\
+Input: root = [2,null,3,null,4,null,5,null,6]\
+Output: 5
+
+
+**Code Solution:**
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def minDepth(self, root: Optional[TreeNode]) -> int:
+        if not root: return 0
+
+        que = deque([root])
+        level = 1
+        depth = float('inf')
+
+        while que:
+            for x in range(len(que)):
+                node = que.popleft()
+
+                if (not node.left) and (not node.right): return level
+
+                if node.left: que.append(node.left)
+                if node.right: que.append(node.right)
+
+            level += 1
+
+        return level
+
+
+# --------- Using only While loop -------------
+def minDepth(self, root: Optional[TreeNode]) -> int:
+    if not root: return 0
+
+    que = deque([(root, 1)])
+
+    while que:
+        node, level = que.popleft()
+
+        if (not node.left) and (not node.right): return level
+
+        if node.left: que.append((node.left, level + 1))
+        if node.right: que.append((node.right, level + 1))
+
+    return 0
+
+
+# -------- Recursive [DFS] [Recursive uses stack as nature, so DFS by default] --------
+def minDepth(self, root):
+    if not root: return 0
+
+    # If one side is missing, You must go through the existing side.
+    if not root.left: return self.minDepth(root.right) + 1
+
+    if not root.right: return self.minDepth(root.left) + 1
+
+    return min(self.minDepth(root.left), self.minDepth(root.right)) + 1
+
+```
+
+
+---
+### 39. Maximum Depth of Binary Tree [104]
+Given the `root` of a binary tree, return its maximum depth.\
+A binary tree's `maximum depth` is the number of nodes along the longest path from the root node down to the farthest leaf node.
+
+
+*Example 1:*\
+Input: root = [3,9,20,null,null,15,7]\
+Output: 3
+
+*Example 2:*\
+Input: root = [1,null,2]\
+Output: 2
+
+
+**Code Solution:**
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def maxDepth(self, root: Optional[TreeNode]) -> int: # DFS
+        # Go full Deep, and pop by adding 1
+        if not root: return 0
+        return max(self.maxDepth(root.left), self.maxDepth(root.right)) + 1
+
+
+# ---- Iterative BFS -------
+def maxDepth(self, root):
+    if not root: return 0
+
+    queue = deque([root])
+    depth = 0
+
+    while queue:
+        depth += 1
+        for _ in range(len(queue)):
+            node = queue.popleft()
+            if node.left: queue.append(node.left)
+            if node.right: queue.append(node.right)
+
+    return depth
+```
+
+
+---
+### 40. Find Maximum Node in the Tree
+
+**Code Solution:**
+```python
+def findMax(root: Optional[TreeNode]) -> int:
+    if not root: return float('-inf')  # very small value
+
+    left_max = findMax(root.left)
+    right_max = findMax(root.right)
+
+    return max(root.val, left_max, right_max)
+
+
+# ------ Iterative ----------
+def findMax(root):
+    if not root: return float('-inf')
+
+    queue = deque([root])
+    maximum = root.val
+
+    while queue:
+        node = queue.popleft()
+        maximum = max(maximum, node.val)
+
+        if node.left: queue.append(node.left)
+        if node.right: queue.append(node.right)
+
+    return maximum
+```
+
+
+---
+### 41. Binary Tree Level Order Traversal [102]
+Given the `root` of a binary tree, return the level order traversal of its nodes' values. (i.e., from left to right, level by level).
+
+
+*Example 1:*\
+![alt text](image-11.png)\
+Input: root = [3,9,20,null,null,15,7]\
+Output: [[3],[9,20],[15,7]]
+
+*Example 2:*\
+Input: root = [1]\
+Output: [[1]]
+
+*Example 3:*\
+Input: root = []\
+Output: []
+
+**Code Solution:**
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+        if not root: return []
+
+        que = deque([root])
+        levels = []
+
+        while que:
+            level = []
+            for x in range(len(que)):
+                node = que.popleft()
+                level.append(node.val)
+                
+                if node.left: que.append(node.left)
+                if node.right: que.append(node.right)
+
+            levels.append(level)
+
+        return levels
+```
+
+
+---
+### 42. Same Tree [100]
+Given the roots of two binary trees `p` and `q`, write a function to check if they are the same or not.\
+Two binary trees are considered the same if they are structurally identical, and the nodes have the same value.
+
+
+*Example 1:*\
+![alt text](image-12.png)\
+Input: p = [1,2,3], q = [1,2,3]\
+Output: true
+
+*Example 2:*\
+![alt text](image-13.png)\
+Input: p = [1,2], q = [1,null,2]\
+Output: false
+
+*Example 3:*\
+![alt text](image-14.png)\
+Input: p = [1,2,1], q = [1,1,2]\
+Output: false
+
+*Example 4:*\
+![alt text](image-15.png)
+Input: p = [10,5,15], q = [10,5,null,null,15]\
+Output: false
+
+**Code Solution:**
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution: # For recursive find Edge Cases
+    def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
+        if not p and not q: return True
+
+        if not p or not q: return False
+
+        if p.val != q.val: return False
+
+        return self.isSameTree(p.left, q.left) and self.isSameTree(p.right, q.right)
+
+# ----- Iterative DFS ------
+class Solution:
+    def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
+        stack = [(p, q)]
+
+        while stack:
+            nodep, nodeq = stack.pop()
+            
+            if not nodep and not nodeq: continue
+            if not nodep or not nodeq: return False
+            if nodep.val != nodeq.val: return False
+
+            stack.append((nodep.left, nodeq.left))
+            stack.append((nodep.right, nodeq.right))
+
+        return True
+```
+
+
+---
+### 43. Path Sum [100]
+Given the `root` of a binary tree and an integer `targetSum`, return `true` if the tree has a root-to-leaf path such that adding up all the values along the path equals `targetSum`.\
+A leaf is a node with no children.
+
+*Example 1:*\
+Input: root = [5,4,8,11,null,13,4,7,2,null,null,null,1], targetSum = 22\
+Output: true\
+Explanation: The root-to-leaf path with the target sum is shown.
+
+*Example 2:*\
+Input: root = [1,2,3], targetSum = 5\
+Output: false\
+Explanation: There are two root-to-leaf paths in the tree:\
+(1 --> 2): The sum is 3.\
+(1 --> 3): The sum is 4.\
+There is no root-to-leaf path with sum = 5.
+
+*Example 3:*\
+Input: root = [], targetSum = 0\
+Output: false\
+Explanation: Since the tree is empty, there are no root-to-leaf paths.
+
+
+**Code Solution:**
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def hasPathSum(self, root: Optional[TreeNode], targetSum: int) -> bool:
+        if not root: return False
+        stack = [(root, root.val)]
+
+        while stack:
+            node, currentSum = stack.pop()
+            if node is None: continue
+
+            if not node.left and not node.right:
+                if currentSum == targetSum: return True
+
+            # CurrentSum is calculated till the node, from now its children will add its own value
+            if node.left: stack.append((node.left, currentSum + node.left.val))
+            if node.right: stack.append((node.right, currentSum + node.right.val))
+
+        return False
+
+# ---------- Recursion ------------
+class Solution:
+    def hasPathSum(self, root: Optional[TreeNode], targetSum: int) -> bool:
+        if not root: return False
+
+        def dfs(root, currentSum):
+            if root is None: return False
+
+            currentSum += root.val
+
+            if not root.left and not root.right and currentSum == targetSum:
+                return True
+
+            return dfs(root.left, currentSum) or dfs(root.right, currentSum)
+
+        return dfs(root, 0)
+
+# ---- Recursion with Same Function ------
+def hasPathSum(self, root, targetSum):
+    if not root:
+        return False
+    
+    if not root.left and not root.right:
+        return targetSum == root.val
+    
+    return (self.hasPathSum(root.left, targetSum - root.val) or
+            self.hasPathSum(root.right, targetSum - root.val))
+```
+
+
+---
+---
+### 🧠 Recursion / Backtracking – Common Mistake Cheat Sheet
+
+---
+
+### 1️⃣ STATE MIXING MISTAKE
+(Your hasPathSum mistake)
+
+❌ Wrong:\
+Using one global variable for all branches.
+
+Example mistake:\
+target += node.val   (shared across left & right)
+
+✔ Rule:\
+Each recursive call must have its OWN state.
+
+If recursion has:\
+dfs(node, current_sum)
+
+Then each branch gets separate copy automatically.
+
+👉 Never manually subtract to "undo" unless you are using backtracking pattern.
+
+---
+
+### 2️⃣ FORGETTING LEAF CONDITION
+
+Problem says:\
+"root to leaf"
+
+❌ Wrong:\
+Checking sum before confirming leaf.
+
+✔ Rule:\
+If problem says root-to-leaf,\
+ALWAYS check:\
+if not node.left and not node.right
+
+Leaf check is mandatory.
+
+---
+
+### 3️⃣ WRONG AND / OR LOGIC
+
+If question asks:\
+"Does there exist a path?"
+
+✔ Use OR
+
+If question asks:\
+"Are both trees same?"
+
+✔ Use AND
+
+Golden Rule:\
+Existence → OR  \
+Validation / Matching → AND
+
+---
+
+### 4️⃣ RETURN VALUE NOT USED
+
+Common mistake:
+
+dfs(node.left)\
+dfs(node.right)\
+return node.val == something
+
+❌ You ignored returned results.
+
+✔ Rule:\
+Always combine recursive results:
+
+left = dfs(node.left)\
+right = dfs(node.right)
+
+return left OR right\
+return left AND right\
+return max(left, right)
+
+---
+
+### 5️⃣ BASE CASE RETURN WRONG VALUE
+
+Ask:\
+What should NULL return?
+
+Examples:
+
+Max depth:\
+if not node → return 0
+
+Max value:\
+if not node → return -inf
+
+Boolean check:\
+if not node → return True or False?\
+(Depends on problem logic)
+
+Null return value controls whole recursion.
+
+---
+
+### 6️⃣ MODIFYING SHARED LIST WITHOUT BACKTRACK
+
+❌ Wrong:\
+path.append(x)\
+dfs(...)
+### no pop()
+
+✔ Rule:\
+If you modify list → always undo.
+
+append → pop\
+add → remove\
+mark → unmark
+
+Backtracking = clean state restore.
+
+---
+
+### 7️⃣ CHECKING CONDITION BEFORE UPDATING STATE
+
+Wrong order:
+
+if sum == target:\
+sum += node.val
+
+✔ Correct order:\
+Update state first\
+Then check base condition
+
+---
+
+### 8️⃣ CONFUSING TREE PROBLEMS TYPES
+
+There are only 3 categories:
+
+1. Carry State Down\
+   Example: Path Sum
+
+2. Combine From Children\
+   Example: Max Depth
+
+3. Validate Structure\
+   Example: Same Tree
+
+First decide category.\
+Then apply correct pattern.
+
+---
+
+### 🎯 Final Mental Model
+
+Before coding recursion, ask:
+
+1. What is my state?
+2. Is it shared or separate per branch?
+3. What should null return?
+4. Do I need AND or OR?
+5. Do I need to undo changes?
+
+If you answer these 5,\
+you will avoid 90% recursion bugs.
+
+
+---
+---
+### 44. Diameter of Binary Tree [543]
+Given the `root` of a binary tree, return the length of the `diameter` of the tree.\
+The `diameter` of a binary tree is the `length` of the longest path between any two nodes in a tree. This path may or may not pass through the `root`.\
+The `length` of a path between two nodes is represented by the number of edges between them.
+
+*Example 1:*\
+Input: root = [1,2,3,4,5]\
+Output: 3\
+Explanation: 3 is the length of the path [4,2,1,3] or [5,2,1,3].
+
+*Example 2:*\
+Input: root = [1,2]\
+Output: 1
+
+**Explanation:**\
+It's Basically MinDepth Problem with Maintaining the Count of Edges
+
+**Code Solution:**
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+        self.res = 0
+
+        # Returns Height
+        def dfs(curr):
+            if not curr: return 0
+            
+            left = dfs(curr.left)
+            right = dfs(curr.right)
+
+            self.res = max(self.res, left + right)
+            return 1 + max(left, right)
+
+        dfs(root)
+        return self.res
+
+# --------- Iterative ---------------
+class Solution:
+    def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+        stack = [(root, False)]
+        maxheightDict = {}
+        diameter = 0
+
+        while stack:
+            node, visited = stack.pop()
+
+            if not visited:
+                stack.append((node, True))
+                if node.left:
+                    stack.append((node.left, False))
+                if node.right:
+                    stack.append((node.right, False))
+
+            else:
+                if node.left is None: leftHeight = 0
+                else leftHeight = maxHeightDict.pop(node.left)
+
+                if node.right is None: rightHeight = 0
+                else rightHeight = maxHeightDict.pop(node.right)
+
+                diameter = max(diameter, leftHeight + rightHeight)
+                maxHeightDict[node] = max(leftHeight, rightHeight) + 1
+
+        return diameter
+```
+
+
+---
+### 45. Invert Binary Tree [226]
+Given the `root` of a binary tree, invert the tree, and return its root.
+
+*Example 1:*\
+Input: root = [4,2,7,1,3,6,9]\
+Output: [4,7,2,9,6,3,1]
+
+*Example 2:*\
+Input: root = [2,1,3]\
+Output: [2,3,1]
+
+*Example 2:*\
+Input: root = []\
+Output: []
+
+**Code Solution:**
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def invertTree(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        que = deque([root])
+
+        while que:
+            node = que.popleft()
+            if not node: continue
+
+            node.left, node.right = node.right, node.left
+            que.extend([node.left, node.right])
+
+        return root
+
+# ------- Recursive ---------
+class Solution:
+    def invertTree(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        if not root: return None
+
+        root.left, root.right = self.invertTree(root.right), self.invertTree(root.left)
+        return root
+```
+
+
+---
+### 46. Lowest Common Ancestor of a Binary Tree [236]
+Given a binary tree, find the lowest common ancestor (LCA) of two given nodes in the tree.\
+According to the `definition of LCA on Wikipedia`: “The lowest common ancestor is defined between two nodes `p` and `q` as the lowest node in `T` that has both `p` and `q` as descendants (where we allow `a node to be a descendant of itself`).”
+
+*Example 1:*\
+Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1\
+Output: 3\
+Explanation: The LCA of nodes 5 and 1 is 3.
+
+*Example 2:*\
+Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4\
+Output: 5\
+Explanation: The LCA of nodes 5 and 4 is 5, since a node can be a descendant of itself according to the LCA definition.
+
+*Example 3:*\
+Input: root = [1,2], p = 1, q = 2\
+Output: 1
+
+**Code Solution:**
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode': #DFS
+        if root == None or root == p or root == q: return root
+
+        left = self.lowestCommonAncestor(root.left, p, q)
+        right = self.lowestCommonAncestor(root.right, p, q)
+
+        if left != None and right != None: return root
+        return left or right
+
+# ----------- Iterative ---------
+class Solution:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode': #DFS
+        que = deque([root])
+        parent = {root: None}
+
+        while que:
+            node = que.popleft()
+
+            if node.left:
+                que.append(node.left)
+                parent[node.left] = node
+
+            if node.right:
+                que.append(node.right)
+                parent[node.right] = node
+
+            if p in parent and q in parent: break
+
+        ancestors = set()
+        while p:
+            ancestors.add(p)
+            p = parent[p]
+
+        while q:
+            if q in ancestors: return q
+            q = parent[q]
+```
+
+
+---
+### 47. Search in a Binary Search Tree [700] {*Binary Search Tree*}
+You are given the root of a binary search tree (BST) and an integer val.\
+Find the node in the BST that the node's value equals val and return the subtree rooted with that node. If such a node does not exist, return null.
+
+
+*Example 1:*\
+Input: root = [4,2,7,1,3], val = 2\
+Output: [2,1,3]
+
+*Example 2:*\
+Input: root = [4,2,7,1,3], val = 5\
+Output: []
+
+
+**Code Solution:**
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def searchBST(self, root: Optional[TreeNode], val: int) -> Optional[TreeNode]:        
+        curr = root
+
+        while curr:
+            if curr.val == val: return curr
+
+            if val < curr.val:
+                curr = curr.left
+                continue
+
+            if val > curr.val:
+                curr = curr.right
+                continue
+
+        return None
+
+# --------- Recursive --------------
+class Solution:
+    def searchBST(self, root: Optional[TreeNode], val: int) -> Optional[TreeNode]:        
+        if not root: return None
+        if root.val == val: return root
+
+        if val < root.val: return self.searchBST(root.left, val)
+        if val > root.val: return self.searchBST(root.right, val)
+```
+
+
+---
+### 48. Search in a Binary Search Tree [701]
+You are given the root of a binary search tree (BST) and an integer val.\
+Find the node in the BST that the node's value equals val and return the subtree rooted with that node. If such a node does not exist, return null.
+
+
+*Example 1:*\
+Input: root = [4,2,7,1,3], val = 2\
+Output: [2,1,3]
+
+*Example 2:*\
+Input: root = [4,2,7,1,3], val = 5\
+Output: []
+
+
+**Explanation:**\
+The key misunderstanding is about what “insert into BST” actually means.
+- 👉 In a `Binary Search Tree`, `you NEVER insert in the middle` by pushing nodes down manually.
+- 👉 You `always insert at a leaf position` where a None exists.
+- 👉 BST insertion = exactly same as BST search, but stop at None and insert.
+
+**Code Solution:**
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def insertIntoBST(self, root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
+
+        if not root: return TreeNode(val)
+
+        # Because in BST insertion, you must stop before curr becomes None, not after.
+        curr = root
+        while True:
+            if val < curr.val:
+                if curr.left: curr = curr.left
+                else:
+                    curr.left = TreeNode(val)
+                    break
+
+            elif val > curr.val:
+                if curr.right: curr = curr.right
+                else:
+                    curr.right = TreeNode(val)
+                    break
+
+        return root
+```
+
+
+---
+### 49. Convert Sorted Array to Binary Search Tree [108]
+Given an integer array nums where the elements are `sorted in ascending order`, convert it to a `height-balanced` binary search tree.
+
+*Example 1:*\
+Input: nums = [-10,-3,0,5,9]\
+Output: [0,-3,9,-10,null,5]\
+Explanation: [0,-10,5,null,-3,null,9] is also accepted
+
+*Example 2:*\
+Input: nums = [1,3]\
+Output: [3,1]\
+Explanation: [1,null,3] and [3,1] are both height-balanced BSTs.
+
+
+**Code Solution:**
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+# ----------- Iterative BFS ------------
+class Solution:
+    def sortedArrayToBST(self, nums: List[int]) -> Optional[TreeNode]:
+        if not nums: return None
+
+        mid = len(nums) // 2
+        root = TreeNode(nums[mid])
+
+        que = deque()
+        que.append((root, 0, mid - 1))
+        que.append((root, mid + 1, len(nums) - 1))
+
+        while que:
+            parent, left, right = que.popleft()
+
+            if left <= right:
+                midIndex = (left + right) // 2
+                child = TreeNode(nums[midIndex])
+
+                if nums[midIndex] < parent.val:
+                    parent.left = child
+                elif nums[midIndex] > parent.val:
+                    parent.right = child
+
+                que.append((child, left, midIndex - 1))
+                que.append((child, midIndex + 1, right))
+        
+        return root
+
+# ------- Recursive DFS --------
+class Solution:
+    def sortedArrayToBST(self, nums: List[int]) -> Optional[TreeNode]:
+
+        def convert(left, right):
+            if left > right: return None
+            
+            mid = (left + right) // 2
+            node = TreeNode(nums[mid])
+
+            node.left = convert(left, mid - 1)
+            node.right = convert(mid + 1, right)
+
+            return node
+        
+        return convert(0, len(nums) - 1)
+```
