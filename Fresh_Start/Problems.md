@@ -641,11 +641,10 @@ class Solution:
         # Sort to avoid duplications easily
         nums.sort()
 
-        # If no negative numbers
+        # If no negative numbers, As we have to return 0 [No -ve number no sum == 0]
         if nums[0] > 0: return []
 
         for i, val in enumerate(nums):
-            # Avoid duplicate results [As same value is already evaluated]
             if i > 0 and val == nums[i - 1]: continue
 
             # Pointer to find remaining 2 sums
@@ -662,6 +661,7 @@ class Solution:
                     x += 1
 
                     # Avoid duplicate results [As same value is already evaluated]
+                    # Same numbers in continous in array
                     while x < y and nums[x] == nums[x - 1]: x += 1
 
         return result
@@ -2612,7 +2612,6 @@ def minDepth(self, root):
     if not root.right: return self.minDepth(root.left) + 1
 
     return min(self.minDepth(root.left), self.minDepth(root.right)) + 1
-
 ```
 
 
@@ -3182,6 +3181,7 @@ class Solution:
 Given a binary tree, find the lowest common ancestor (LCA) of two given nodes in the tree.\
 According to the `definition of LCA on Wikipedia`: “The lowest common ancestor is defined between two nodes `p` and `q` as the lowest node in `T` that has both `p` and `q` as descendants (where we allow `a node to be a descendant of itself`).”
 
+
 *Example 1:*\
 Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1\
 Output: 3\
@@ -3195,6 +3195,7 @@ Explanation: The LCA of nodes 5 and 4 is 5, since a node can be a descendant of 
 *Example 3:*\
 Input: root = [1,2], p = 1, q = 2\
 Output: 1
+
 
 **Code Solution:**
 ```python
@@ -3317,6 +3318,7 @@ The key misunderstanding is about what “insert into BST” actually means.
 - 👉 You `always insert at a leaf position` where a None exists.
 - 👉 BST insertion = exactly same as BST search, but stop at None and insert.
 
+
 **Code Solution:**
 ```python
 # Definition for a binary tree node.
@@ -3418,4 +3420,1860 @@ class Solution:
             return node
         
         return convert(0, len(nums) - 1)
+```
+
+
+---
+### 50. Two Sum IV - Input is a BST [653]
+Given the root of a binary search tree and an integer k, return true if there exist two elements in the BST such that their sum is equal to k, or false otherwise.
+
+
+*Example 1:*\
+Input: root = [5,3,6,2,4,null,7], k = 9\
+Output: true
+
+*Example 2:*\
+Input: root = [5,3,6,2,4,null,7], k = 28\
+Output: false
+
+
+**Code Solution:**
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+# Using Original Two Sum Array Logic with map
+class Solution:
+    def findTarget(self, root: Optional[TreeNode], k: int) -> bool:
+        previousNumberMap = {}
+        que = deque()
+
+        que.append(root)
+
+        while que:
+            node = que.pop()
+
+            targetDiff = (k - node.val)
+
+            if previousNumberMap.get(targetDiff) is not None: return True
+            previousNumberMap[node.val] = node
+
+            if node.left: que.append(node.left)
+            if node.right: que.append(node.right)
+
+        return False
+
+# Using Set
+class Solution:
+    def findTarget(self, root: Optional[TreeNode], k: int) -> bool:
+        previousNumberSet = set()
+        que = deque()
+
+        que.append(root)
+
+        while que:
+            node = que.pop()
+
+            if (k - node.val) in previousNumberSet: return True
+            sumMap.add(node.val)
+
+            if node.left: que.append(node.left)
+            if node.right: que.append(node.right)
+
+        return False
+```
+
+
+---
+### 51. Lowest Common Ancestor of a Binary Search Tree [235]
+Given a binary search tree (BST), find the lowest common ancestor (LCA) node of two given nodes in the BST.
+
+According to the definition of LCA on Wikipedia: “The lowest common ancestor is defined between two nodes `p` and `q` as the lowest node in `T` that has both `p` and `q` as descendants (where we allow `a node to be a descendant of itself`).”
+
+
+*Example 1:*\
+Input: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8\
+Output: 6\
+Explanation: The LCA of nodes 2 and 8 is 6.
+
+*Example 2:*\
+Input: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 4\
+Output: 2\
+Explanation: The LCA of nodes 2 and 4 is 2, since a node can be a descendant of itself according to the LCA definition.
+
+
+**Explanation:**\
+- This approach is working because Binary Search Tree is Sorted
+- While Only Binary Tree is not Sort, that's the reason we are using the approach above
+
+
+**Code Solution:**
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        curr = root
+
+        while curr:
+            if p.val < curr.val and q.val < curr.val:
+                curr = curr.left
+            elif p.val > curr.val and q.val > curr.val:
+                curr = curr.right
+            else:
+                return curr
+
+# -------- Recursive ----------
+class Solution:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        if p.val < root.val and q.val < root.val:
+            return self.lowestCommonAncestor(root.left, p, q)
+        elif p.val > root.val and q.val > root.val:
+            return self.lowestCommonAncestor(root.right, p, q)
+        else:
+            return root
+```
+
+
+---
+### 52. Minimum Absolute Difference in BST [530]
+Given the root of a Binary Search Tree (BST), return the minimum absolute difference between the values of any two different nodes in the tree.
+
+
+*Example 1:*\
+Input: root = [4,2,6,1,3]\
+Output: 1
+
+*Example 2:*\
+Input: root = [1,0,48,null,null,12,49]\
+Output: 1
+
+
+**Code Solution:**
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def getMinimumDifference(self, root: Optional[TreeNode]) -> int:
+        preVal, minDiff = None, float('inf')
+
+        def dfs(node):
+            if not node: return
+
+            # Go Left
+            dfs(node.left)
+            
+            # Process the Node
+            nonlocal preVal, minDiff
+            if preVal:
+                minDiff = min((node.val - preVal.val), minDiff)
+            preVal = node
+
+            # Go Right
+            dfs(node.right)
+
+        dfs(root)
+
+        return minDiff
+
+# ------ Iterative ----------
+class Solution:
+    def getMinimumDifference(self, root: Optional[TreeNode]) -> int:
+        minDiff, preVal = float('inf'), float('-inf')
+
+        stack = []
+        while root or stack:
+            if root:
+                stack.append(root)
+                root = root.left
+            else:
+                root = stack.pop()
+                minDiff = min(minDiff, (root.val - preVal.val))
+                preVal = root.val
+
+                root = root.right
+        
+        return minDiff
+```
+
+
+---
+---
+### `Inorder traversal` of a Binary Search Tree (BST) `visits nodes in this order`
+#### Left → Root → Right 🌿
+
+#### Recursive Approach:
+```python
+class Solution:
+    def inorderTraversal(self, root):
+        result = []
+
+        def inorder(node):
+            if not node:
+                return
+            inorder(node.left)      # visit left
+            result.append(node.val) # visit root
+            inorder(node.right)     # visit right
+
+        inorder(root)
+        return result
+```
+
+#### Iterative Approach:
+```python
+class Solution:
+    def inorderTraversal(self, root):
+        result = []
+        stack = []
+        current = root
+
+        while current or stack:
+            # go to leftmost node
+            if current:
+                stack.append(current)
+                current = current.left
+
+            else:
+                # process node
+                current = stack.pop()
+                result.append(current.val)
+
+                # go right -> Then again append left
+                current = current.right
+
+        return result
+```
+
+#### 🧠 Remember this pattern:
+```python
+stack = []
+while current or stack:
+    go left
+    process node # Current Node
+    go right
+```
+
+---
+### 🧠 Ultimate Cheat Sheet
+
+```python
+def dfs(node):
+    if not node: return   # base case
+        
+    # 1. do something before left   → preorder
+    dfs(node.left)
+
+    # 2. do something between      → inorder
+    dfs(node.right)
+
+    # 3. do something after right  → postorder
+```
+
+#### Recursive DFS [By Default DFS]
+```python
+if not node: return
+dfs(node.left)
+dfs(node.right)
+```
+
+#### Iterative DFS
+```python
+stack = [root]
+while stack:
+    node = stack.pop()
+```
+
+#### Iterative BFS
+```python
+queue = deque([root])
+while queue:
+    node = queue.popleft()
+```
+
+
+---
+---
+### 53. Balance a Binary Search Tree [1382]
+Given the `root` of a binary search tree, return a balanced binary search tree with the same node values. If there is more than one answer, `return any of them`.\
+A binary search tree is `balanced` if the depth of the two subtrees of every node never differs by more than `1`.
+
+
+*Example 1:*\
+Input: root = [1,null,2,null,3,null,4,null,null]\
+Output: [2,1,3,null,null,null,4]\
+Explanation: This is not the only correct answer, [3,1,4,null,2] is also correct.
+
+*Example 2:*\
+Input: root = [2,1,3]\
+Output: [2,1,3]
+
+
+**Code Solution:**
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def inOrderTraversal(self, node):
+        if not node: return
+
+        self.inOrderTraversal(node.left)
+        self.nodes.append(node.val)
+        self.inOrderTraversal(node.right)
+
+
+    def convertToBalanceBST(self, left, right):
+        if left > right: return None
+
+        mid = (left + right) // 2
+        node = TreeNode(self.nodes[mid])
+
+        node.left = self.convertToBalanceBST(left, mid - 1)
+        node.right = self.convertToBalanceBST(mid + 1, right)
+
+        return node
+
+
+    def balanceBST(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        self.nodes = []
+
+        self.inOrderTraversal(root)
+
+        return self.convertToBalanceBST(0, len(self.nodes) - 1)
+```
+
+
+---
+### 54. Delete Node in a BST [450]
+Given a root node reference of a BST and a key, delete the node with the given key in the BST. Return the root node reference (possibly updated) of the BST.
+
+Basically, the deletion can be divided into two stages:
+- Search for a node to remove.
+- If the node is found, delete the node.
+
+
+*Example 1:*\
+Input: root = [5,3,6,2,4,null,7], key = 3\
+Output: [5,4,6,2,null,null,7]\
+Explanation: Given key to delete is 3. So we find the node with value 3 and delete it.\
+One valid answer is [5,4,6,2,null,null,7], shown in the above BST.\
+Please notice that another valid answer is [5,2,6,null,4,null,7] and it's also accepted.
+
+*Example 2:*\
+Input: root = [5,3,6,2,4,null,7], key = 0\
+Output: [5,3,6,2,4,null,7]\
+Explanation: The tree does not contain a node with value = 0.
+
+*Example 3:*\
+Input: root = [], key = 0\
+Output: []
+
+**Explanation:**\
+```python
+if not root: return None
+if key < root.val:
+    root.left = delete left
+elif key > root.val:
+    root.right = delete right
+else:
+    if one child → return child
+    if two child → replace with successor
+return root
+```
+
+
+**Code Solution:**
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def deleteNode(self, root: Optional[TreeNode], key: int) -> Optional[TreeNode]:
+        if not root: return None
+
+        # search Node
+        if key < root.val:
+            root.left = self.deleteNode(root.left, key)
+        elif key > root.val:
+            root.right = self.deleteNode(root.right, key)
+
+        else:
+            # case 1: no left child
+            if not root.left: return root.right
+
+            # case 2: no right child
+            if not root.right: return root.left
+
+            # case 3: two children
+            # find inorder successor (smallest in right subtree)
+            successor = root.right
+            while successor.left:
+                successor = successor.left
+
+            # replace value
+            root.val = successor.val
+
+            # delete successor
+            root.right = self.deleteNode(root.right, successor.val)
+
+        return root
+
+# ----------- Iterative ----------------
+class Solution:
+    def deleteNode(self, root: Optional[TreeNode], key: int) -> Optional[TreeNode]:
+
+        parent = None
+        curr = root
+
+        # 1️⃣ Find the node
+        while curr and curr.val != key:
+            parent = curr
+            if key < curr.val:
+                curr = curr.left
+            else:
+                curr = curr.right
+
+        # not found
+        if not curr:
+            return root
+
+        # 2️⃣ If node has two children
+        if curr.left and curr.right:
+            succ_parent = curr
+            succ = curr.right
+
+            while succ.left:
+                succ_parent = succ
+                succ = succ.left
+
+            curr.val = succ.val  # replace value
+            parent = succ_parent
+            curr = succ
+
+        # 3️⃣ Now curr has at most one child
+        child = curr.left if curr.left else curr.right
+
+        # deleting root
+        if not parent:
+            return child
+
+        if parent.left == curr:
+            parent.left = child
+        else:
+            parent.right = child
+
+        return root
+```
+
+
+---
+### 55. Kth Smallest Element in a BST [230]
+Given the `root` of a binary search tree, and an integer `k`, return the `kth` smallest value `(1-indexed)` of all the values of the nodes in the tree.
+
+
+*Example 1:*\
+Input: root = [3,1,4,null,2], k = 1\
+Output: 1
+
+*Example 2:*\
+Input: root = [5,3,6,2,4,null,null,1], k = 3\
+Output: 3
+
+
+**Code Solution:**
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+# ---- Inorder Traversal Iterative --------
+class Solution:
+    def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
+        stack = []
+
+        while root or stack:
+            if root:
+                stack.append(root)
+                root = root.left
+            else:
+                root = stack.pop()
+
+                k -= 1
+                if k == 0: return root.val
+
+                root = root.right
+```
+
+
+---
+---
+### Heap:
+---
+A Heap is a special tree-based data structure that lets you quickly access the smallest or largest element ⚡
+
+#### 1️⃣ Min Heap
+Parent is smaller than or equal to children
+
+Example:
+```
+      2
+     / \
+    5   8
+   / \
+  10  7
+```
+
+#### 2️⃣ Max Heap
+
+Parent is greater than or equal to children
+
+Example:
+```
+      10
+     /  \
+    7    8
+   / \
+  2   5
+```
+
+---
+#### 📦 Stored as array (important)
+
+Tree:
+```
+      2
+     / \
+    5   8
+```
+
+Array:
+```
+[2, 5, 8]
+```
+---
+#### ⚡ Why use Heap?
+Because it gives fast access to min/max
+
+| Operation    | Time     |
+| ------------ | -------- |
+| Peek min/max | O(1)     |
+| Insert       | O(log n) |
+| Delete       | O(log n) |
+| Build heap   | O(n)     |
+
+---
+#### 🐍 Python example (min heap)
+
+```python
+import heapq
+
+heap = []
+
+heapq.heappush(heap, 5)
+heapq.heappush(heap, 2)
+heapq.heappush(heap, 8)
+
+print(heap[0])        # 2 (smallest)
+print(heapq.heappop(heap))  # 2
+```
+
+
+---
+---
+### 56. Kth Largest Element in an Array [215] {*Heaps*}
+Given an integer array `nums` and an integer `k`, return the `kth` largest element in the array.\
+Note that it is the kth largest element in the sorted order, not the kth distinct element.\
+Can you solve it without sorting?
+
+
+*Example 1:*\
+Input: nums = [3,2,1,5,6,4], k = 2
+Output: 5
+
+*Example 2:*\
+Input: nums = [3,2,3,1,2,4,5,5,6], k = 4
+Output: 4
+
+
+**Code Solution:**
+```python
+# Using Heap
+
+class Solution:
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        # -1 returns last element
+        return heapq.nlargest(k, nums)[-1] # -> return [6, 5]
+```
+
+
+---
+### 57. K Closest Points to Origin [215]
+Given an array of `points` where `points[i] = [xi, yi]` represents a point on the `X-Y` plane and an integer `k`, return the `k` closest points to the origin `(0, 0)`.\
+The distance between two points on the X-Y plane is the Euclidean distance (i.e.,` √(x1 - x2)2 + (y1 - y2)2`).\
+You may return the answer in `any order`. The answer is `guaranteed` to be `unique` (except for the order that it is in).
+
+
+*Example 1:*\
+Input: points = [[1,3],[-2,2]], k = 1\
+Output: [[-2,2]]\
+Explanation:\
+The distance between (1, 3) and the origin is sqrt(10).\
+The distance between (-2, 2) and the origin is sqrt(8).\
+Since sqrt(8) < sqrt(10), (-2, 2) is closer to the origin.\
+We only want the closest k = 1 points from the origin, so the answer is just [[-2,2]].
+
+*Example 2:*\
+Input: points = [[3,3],[5,-1],[-2,4]], k = 2\
+Output: [[3,3],[-2,4]]\
+Explanation: The answer [[-2,4],[3,3]] would also be accepted.
+
+
+**Explanation:**\
+***Always use first element to make the comparision in the heap***
+
+#### Distance Formula:
+Euclidean distance:
+
+distance = `√(x² + y²)`
+
+Since `√` is unnecessary for comparison, use:
+
+`distance²` = `x² + y²`
+
+This is faster and gives the same ordering.
+
+#### Time complexity:
+O(n log k)
+
+Better than sorting:
+O(n log n)
+
+
+#### Example points
+(1,3) → dist² = 10  
+(3,4) → dist² = 25  
+(2,-1) → dist² = 5  
+
+---
+
+#### Case 1: WITHOUT negative (normal min heap)
+
+Array representation:
+> [5, 25, 10]
+
+Tree representation:
+```
+        5
+       / \
+     25   10
+```
+
+Top element = 5\
+→ closest point at top
+
+If heap size exceeds k, closest gets removed ❌ (wrong behavior)
+
+---
+
+# Case 2: WITH negative (simulate max heap)
+
+Store negative:
+> [-10, -25, -5]
+
+Heap array after heapify:
+> [-25, -10, -5]
+
+Tree representation:
+```
+        -25
+       /   \
+    -10    -5
+```
+
+Top element = -25\
+Actual distance = 25\
+→ farthest point at top ✅
+
+If heap size exceeds k, farthest gets removed ✅
+
+---
+
+#### Mapping back to actual distances
+
+Heap value → Actual distance
+
+-25 → 25  \
+-10 → 10  \
+-5 → 5  
+
+---
+
+#### Key idea
+Normal min heap:\
+smallest distance at top
+
+Negative trick:\
+largest distance appears as smallest negative number at top
+
+---
+
+**Code Solution:**
+```python
+class Solution:
+    def kClosest(self, points: List[List[int]], k: int) -> List[List[int]]:
+        heap = []
+
+        for (x, y) in points:
+            dist = -(x * x + y * y) # -ve to behave as max heap
+
+            # Always use first element to make the comparision in the heap
+            if len(heap) == k:
+                heapq.heappushpop(heap, (dist, x, y)) # Heap pop removes first element
+            else:
+                heapq.heappush(heap, (dist, x, y))
+
+        return [(x, y) for (dist, x, y) in heap]
+```
+
+
+---
+### 58. Top K Frequent Elements [347]
+Given an integer array `nums` and an integer `k`, return the `k` most `frequent elements`. You may return the answer in `any order`.
+
+
+*Example 1:*\
+Input: nums = [1,1,1,2,2,3], k = 2\
+Output: [1,2]
+
+*Example 2:*\
+Input: nums = [1], k = 1\
+Output: [1]
+
+*Example 3:*\
+Input: nums = [1,2,1,2,1,2,3,1,3,2], k = 2\
+Output: [1,2]
+
+**Time Complexity:**
+> O(n log k)
+
+
+**Code Solution:**
+```python
+class Solution:
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        freq = Counter(nums) # key -> count -> O(n)
+        heap = []
+
+        for num, count in freq.items(): # key, value
+            if len(heap) < k:
+                heapq.heappush(heap, (count, num))
+            else:
+                # Using minHeap smallest popped out first
+                # As we need most frequent elements
+                heapq.heappushpop(heap, (count, num))
+        
+        return [num for count, num in heap]
+```
+
+
+---
+---
+### ⭐ Interview pattern recognition:
+
+Use this whenever you see:
+```
+Top K frequent
+Top K largest
+Top K smallest
+```
+
+Pattern template:
+```python
+heap = []
+
+for item in data:
+    if len(heap) < k:
+        push
+    else:
+        pushpop
+```
+
+
+### Same Problem using Bucket Sort Solution: O(n)
+
+```python
+# Problem:
+Input: nums = [1,1,1,2,2,3], k = 2
+Output: [1,2]
+
+#
+class Solution:
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        from collections import Counter
+
+        freq = Counter(nums)
+
+        buckets = [[] for _ in range(len(nums) + 1)]
+
+        for num, count in freq.items(): buckets[count].append(num)
+
+        result = []
+
+        # Why reverse because we want greater first
+        for count in range(len(buckets) - 1, 0, -1):
+            for num in buckets[count]:
+                result.append(num)
+                if len(result) == k: return result
+```
+
+**Explanation:**
+> bucket:[[], [3], [2], [1], [], []]
+
+
+**Actual execution count**
+
+Outer loop runs:
+> n times → O(n)
+
+Inner loop runs:
+> total across ALL buckets = number of unique elements ≤ n
+
+So,
+> n + n = O(n) ✅
+
+---
+### General rule (IMPORTANT INTERVIEW CONCEPT) 🧠
+
+#### When nested loops `iterate over different data`, `total work is sum`, `not multiplication`.
+
+Example:
+```python
+for i in range(n):
+    pass
+
+for item in list_of_size_n:
+    pass
+```
+
+Total:
+```python
+O(n + n) = O(n)
+```
+
+Not:
+```python
+O(n²)
+```
+
+### When nested loops ARE O(n²)
+
+This would be O(n²):
+```python
+for i in range(n):
+    for j in range(n):
+        pass
+```
+because inner loop runs fully every time.
+
+
+---
+---
+### 59. Task Scheduler [621]
+You are given an array of CPU `tasks`, each labeled with a letter from A to Z, and a number `n`. Each CPU interval can be idle or allow the completion of one task. Tasks can be completed in any order, but there's a constraint: there has to be a gap of `at least` **n** intervals between two tasks with the same label.
+
+Return the `minimum` number of CPU intervals required to complete all tasks.
+
+
+*Example 1:*\
+Input: tasks = ["A","A","A","B","B","B"], n = 2\
+Output: 8\
+Explanation:\
+A possible sequence is: A -> B -> idle -> A -> B -> idle -> A -> B.\
+After completing task A, you must wait two intervals before doing A again. The same applies to task B. In the 3rd interval, neither A nor B can be done, so you idle. By the 4th interval, you can do A again as 2 intervals have passed.
+
+*Example 2:*\
+Input: tasks = ["A","C","A","B","D","B"], n = 1\
+Output: 6\
+Explanation:\ 
+A possible sequence is: A -> B -> C -> D -> A -> B.\
+With a cooling interval of 1, you can repeat a task after just one other task.
+
+*Example 3:*\
+Input: tasks = ["A","A","A", "B","B","B"], n = 3\
+Output: 10\
+Explanation:\
+A possible sequence is: A -> B -> idle -> idle -> A -> B -> idle -> idle -> A -> B.\
+There are only two types of tasks, A and B, which need to be separated by 3 intervals. This leads to idling twice between repetitions of these tasks.
+
+
+**Explanation:**
+
+Example:
+```
+tasks = [A,A,A,B,B,B], n = 2
+
+A _ _ A _ _ A
+```
+
+There are:
+```
+maxFreq - 1 = 2 gaps
+each gap size = n = 2
+total empty slots = 4
+```
+Other tasks fill those slots.
+
+**Why Adding to heap again**
+- Because the heap decides which task should run next, not the queue.
+- Heap always execute the task with the highest remaining frequency first.
+    - Queue order depends on cooldown finish time, NOT frequency.
+    - This increases total time → *wrong answer*.
+
+**Flow:**
+```
+heap → pop → execute → put in queue (cooldown)
+
+queue → cooldown finished → put back in heap
+```
+
+
+**Time Complexity:**
+> O(N log N)
+
+**Space Complexity:**
+> O(N)
+
+
+**Code Solution:**
+```python
+class Solution:
+    def leastInterval(self, tasks: List[str], n: int) -> int:
+        # Step 1: Count the frequency of each task
+        taskCount = Counter(tasks) # -> O(n)
+
+        # Step 2: Create a max-heap using the task count
+        maxHeap = []
+        for count in taskCounts.values():
+            maxHeap.append(-count)
+
+        heapq.heapify(maxHeap)
+
+        # Step 3: Initailize variables
+        time = 0
+        waitQue = deque()
+
+        # Step 4: Process the Task
+        while maxHeap or waitQue:
+            time += 1
+
+            if maxHeap:
+                task = heapq.heappop(maxHeap) # O(log N)
+                task += 1 # Decrease the count (since it's -ve)
+
+                # If there are still more of this task to execute, add this to waitQue
+                if task != 0:
+                    waitQue.append((task, time + n))
+
+            # Check if any tasks in the waitQue push back to the heap
+            if waitQue and waitQue[0][1] == time:
+                heapq.heappush(maxHeap, waitQue.popleft()[0])
+
+        return time
+```
+
+
+---
+---
+### Graph
+Graphs are usually stored as **Adjacency List**.
+
+---
+
+#### 1. Creating Graph
+
+#### Undirected Graph
+Example:
+edges = [[0,1],[0,2],[1,3],[2,3]]
+
+```python
+from collections import defaultdict
+
+# If a key does NOT exist, it automatically creates it with a default value.
+# If key is missing → create it with list() as default value.
+
+# We don't need to check, if u not in graph
+
+graph = defaultdict(list)
+
+for u, v in edges:
+    graph[u].append(v)
+    graph[v].append(u)
+
+#
+0 → [1,2]
+1 → [0,3]
+2 → [0,3]
+3 → [1,2]
+```
+
+Time: O(E)\
+Space: O(V + E)
+
+
+#### Directed Graph
+
+```python
+graph = defaultdict(list)
+
+for u, v in edges:
+    graph[u].append(v)
+
+#
+0 → [1,2]
+1 → [3]
+2 → [3]
+```
+
+#### Weighted Graph
+edges = [(0,1,5),(0,2,3)]
+
+```python
+graph = defaultdict(list)
+
+for u, v, w in edges:
+    graph[u].append((v, w))
+```
+
+Result:
+```python
+0 → [(1,5),(2,3)]
+```
+
+#### 2. BFS Traversal (Level Order)
+Uses Queue
+
+Pattern:
+```python
+from collections import deque
+
+def bfs(start, graph):
+    visited = set()
+    queue = deque([start])
+
+    visited.add(start)
+
+    while queue:
+        node = queue.popleft()
+        print(node)
+
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+```
+
+#### 3. DFS Traversal (Recursive)
+Uses Call Stack
+
+Pattern:
+```python
+def dfs(node, graph, visited):
+    if node in visited:
+        return
+
+    visited.add(node)
+
+    print(node)
+
+    for neighbor in graph[node]:
+        dfs(neighbor, graph, visited)
+
+
+visited = set()
+dfs(0, graph, visited)
+```
+
+#### 4. DFS Traversal (Iterative)
+Uses Stack
+
+```python
+def dfs_iter(start, graph):
+    visited = set()
+    stack = [start]
+
+    while stack:
+        node = stack.pop()
+
+        if node in visited:
+            continue
+
+        visited.add(node)
+
+        print(node)
+
+        for neighbor in graph[node]:
+            stack.append(neighbor)
+```
+
+#### 5. BFS vs DFS Quick Difference
+
+| Feature        | BFS         | DFS               |
+| -------------- | ----------- | ----------------- |
+| Data structure | Queue       | Stack / Recursion |
+| Shortest path  | YES         | NO                |
+| Memory         | More        | Less              |
+| Tree traversal | Level order | Pre/In/Post order |
+
+
+#### 6. Grid Graph BFS Example
+```python
+rows, cols = len(grid), len(grid[0])
+
+directions = [(1,0),(-1,0),(0,1),(0,-1)]
+
+queue = deque([(0,0)])
+visited = set([(0,0)])
+
+while queue:
+    r, c = queue.popleft()
+
+    for dr, dc in directions:
+        nr, nc = r+dr, c+dc
+
+        if 0<=nr<rows and 0<=nc<cols and (nr,nc) not in visited:
+            visited.add((nr,nc))
+            queue.append((nr,nc))
+```
+
+#### 7. Interview Template (Most Important)
+```python
+graph = defaultdict(list)
+
+# build graph
+for u, v in edges:
+    graph[u].append(v)
+    graph[v].append(u)
+
+visited = set()
+
+def dfs(node):
+    if node in visited:
+        return
+    visited.add(node)
+
+    print(node)
+
+    for nei in graph[node]:
+        dfs(nei)
+```
+
+#### Complexity Summary
+- Build graph → O(E)
+- BFS → O(V + E)
+- DFS → O(V + E)
+
+
+#### 🔥 Interview Pattern Recognition
+
+- `Grid + islands` → DFS/BFS
+- `Directed + prerequisites` → Cycle detection
+- `Ordering tasks` → Topological sort
+- `Unweighted shortest path` → BFS
+- `Weighted shortest path` → Dijkstra
+- `Copy graph` → DFS + hashmap
+- `Connected components` → DFS
+
+
+---
+---
+### 60. Clone Graph [133]
+Given a reference of a node in a `connected` undirected graph.\
+Return a `deep copy` (clone) of the graph.\
+Each node in the graph contains a value (`int`) and a list (`List[Node]`) of its neighbors..
+```python
+class Node {
+    public int val;
+    public List<Node> neighbors;
+}
+```
+
+Test case format:
+
+For simplicity, each node's value is the same as the node's index (1-indexed). For example, the first node with `val == 1`, the second node with `val == 2`, and so on. The graph is represented in the test case using an adjacency list.
+
+An `adjacency list` is a collection of unordered `lists` used to represent a finite graph. Each list describes the set of neighbors of a node in the graph.
+
+The given node will always be the first node with `val = 1`. You must return the `copy of the given node` as a reference to the cloned graph.
+
+
+*Example 1:*\
+Input: adjList = [[2,4],[1,3],[2,4],[1,3]]\
+Output: [[2,4],[1,3],[2,4],[1,3]]\
+Explanation: There are 4 nodes in the graph.\
+1st node (val = 1)'s neighbors are 2nd node (val = 2) and 4th node (val = 4).\
+2nd node (val = 2)'s neighbors are 1st node (val = 1) and 3rd node (val = 3).\
+3rd node (val = 3)'s neighbors are 2nd node (val = 2) and 4th node (val = 4).\
+4th node (val = 4)'s neighbors are 1st node (val = 1) and 3rd node (val = 3).
+
+*Example 2:*\
+Input: adjList = [[]]\
+Output: [[]]\
+Explanation: Note that the input contains one empty list. The graph consists of only one node with val = 1 and it does not have any neighbors.
+
+*Example 3:*\
+Input: adjList = []\
+Output: []\
+Explanation: This an empty graph, it does not have any nodes.
+
+**Explanation:**
+```
+Original graph  →  We traverse this
+Cloned graph    →  We build this
+
+# Here
+curr = ORIGINAL node
+curr.neighbors → `original neighbors list (NOT empty)`
+```
+
+
+**Complexity:**
+```
+Time  : O(V + E)
+Space : O(V)
+```
+
+
+**Code Solution:**
+```python
+# ---------- DFS Recursive ------------
+"""
+# Definition for a Node.
+class Node:
+    def __init__(self, val = 0, neighbors = None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
+"""
+
+from typing import Optional
+class Solution:
+    def cloneGraph(self, node: Optional['Node']) -> Optional['Node']:
+        if not node:
+            return None
+
+        copied = {}
+
+        def dfs(node):
+            if node in copied: return copied[node]
+
+            copy = Node(node.val)
+            copied[node] = copy
+
+            for nei in node.neighbors:
+                copy.neighbors.append(dfs(nei))
+
+            return copy
+
+        return dfs(node)
+
+# ---------- BFS Iterative ------------
+class Solution:
+    def cloneGraph(self, node: Optional['Node']) -> Optional['Node']:
+        if not node: return None
+
+        que = deque([node])
+        clone = {node: Node(node.val)}
+
+        while que:
+            currNode = que.popleft()
+
+            # We are treversing Original Node
+            for nei in currNode.neighbors: 
+                if nei not in clone:
+                    clone[nei] = Node(nei.val)
+                    que.append(nei)
+
+                clone[currNode].neighbors.append(clone[nei])
+
+        return clone[node]
+```
+
+
+---
+### 61. Find Largest Node:
+
+```py
+## Case A: Nodes are keys in adjacency list
+def findLargestNode(graph):
+    largest = float('-inf')
+
+    for node in graph:
+        largest = max(largest, node)
+
+        for nei in graph[node]:
+            largest = max(largest, nei)
+
+    return largest
+
+# Time: O(V + E)
+
+# ---
+
+## Case B: If graph is given as edges list
+def findLargestFromEdges(edges):
+    largest = float('-inf')
+
+    for u, v in edges:
+        largest = max(largest, u, v) # max(p1, p2, *args, key)
+
+    return largest
+
+findLargestFromEdges([(1, 2), (2, 5), (3, 4)])
+
+# Time: O(E)
+```
+
+
+---
+### 62. Detect Cycle:
+
+```py
+# ----------------------------------
+# 🔹 A) Undirected Graph (DFS)
+# ----------------------------------
+
+def hasCycleUndirected(graph):
+    visited = set()
+
+    def dfs(node, parent):
+        visited.add(node)
+
+        for nei in graph[node]:
+            if nei not in visited:
+                if dfs(nei, node):
+                    return True
+            elif nei != parent:
+                return True
+
+        return False
+
+    for node in graph:
+        if node not in visited:
+            if dfs(node, -1):
+                return True
+
+    return False
+
+
+# Time: O(V + E)
+
+# Key idea:
+# If you see a visited neighbor that is NOT your parent → cycle.
+```
+
+```py
+# ----------------------------------
+# 🔹 B) Directed Graph (DFS 3-state)
+# ----------------------------------
+
+def hasCycleDirected(graph, n):
+    state = [0] * n
+    # 0 = unvisited
+    # 1 = visiting
+    # 2 = visited
+
+    def dfs(node):
+        if state[node] == 1:
+            return True
+        if state[node] == 2:
+            return False
+
+        state[node] = 1
+
+        for nei in graph[node]:
+            if dfs(nei):
+                return True
+
+        state[node] = 2
+        return False
+
+    for i in range(n):
+        if dfs(i):
+            return True
+
+    return False
+
+
+# Time: O(V + E)
+
+# Key idea:
+# If you reach a node that is already "visiting" → cycle.
+```
+
+
+---
+### 63. Count Number of Edges:
+
+```py
+# ----------------------------------
+#🔹 A) Undirected Graph
+# ----------------------------------
+
+def countEdgesUndirected(graph):
+    total = 0
+
+    for node in graph:
+        total += len(graph[node])
+
+    return total // 2
+
+
+# Why divide by 2?
+# Because each edge is counted twice:
+# u → v
+# v → u
+```
+
+```py
+# ----------------------------------
+# 🔹 B) Directed Graph
+# ----------------------------------
+
+def countEdgesDirected(graph):
+    total = 0
+
+    for node in graph:
+        total += len(graph[node])
+
+    return total
+
+
+# Time: O(V)
+```
+
+---
+---
+### Graph Search Algo's with Weighted Graphs
+
+#### **1️⃣ DIJKSTRA — Basic Structure**
+
+**🎯 When to Use**
+- Weighted graph
+- No negative weights
+- Want shortest path
+
+**When not Work:**\
+- The Algo will not consider the Relaxed Vertice
+- But we do Relax again the Distance [Cost] changes in case of -ve Weights
+
+**🧠 Core Idea:**\
+Always expand the node with the smallest known distance.
+
+**Uses:**
+- Min Heap
+- Distance array
+
+**Relax means: [Simply Updating the Node Distance]**
+
+![alt text](image-16.png)
+
+```py
+if dist[u] + weight < dist[v] # <- v is 1 in the image
+    update dist[v] = dist[u] + weight [Cost Of Edge (u, v)]
+
+
+In the Below Example heap is Managing the Order and Pop the Smallest Always
+```
+
+
+**Pure Skeleton:**
+```py
+import heapq
+from collections import defaultdict
+
+def dijkstra(n, edges, src):
+
+    # Step 1: Build graph
+    graph = defaultdict(list)
+    for u, v, w in edges:
+        graph[u].append((v, w))
+
+    # Step 2: Min heap (distance, node)
+    minHeap = [(0, src)]
+
+    # Step 3: Distance map
+    dist = {}
+
+    while minHeap:
+
+        d, node = heapq.heappop(minHeap)
+
+        # If already processed [Relaxed], skip
+        if node in dist:
+            continue
+
+        dist[node] = d
+
+        # Relax neighbors
+        for nei, weight in graph[node]:
+            if nei not in dist:
+                heapq.heappush(minHeap, (d + weight, nei))
+
+    return dist
+
+# -------- Without Heap -----------
+def dijkstra(n, edges, src):
+
+    # Step 1: Build adjacency list
+    graph = [[] for _ in range(n)]
+    for u, v, w in edges:
+        graph[u].append((v, w))
+
+    # Step 2: Initialize distances
+    dist = [float('inf')] * n
+    dist[src] = 0
+
+    visited = [False] * n
+
+    # Step 3: Repeat V times
+    for _ in range(n):
+
+        # 3.1 Pick unvisited node with smallest distance
+        minNode = -1
+        minDist = float('inf')
+
+        for i in range(n):
+            if not visited[i] and dist[i] < minDist:
+                minDist = dist[i]
+                minNode = i
+
+        # If no reachable node remains
+        if minNode == -1:
+            break
+
+        # 3.2 Mark as visited
+        visited[minNode] = True
+
+        # 3.3 Relax its neighbors
+        for nei, weight in graph[minNode]:
+            if not visited[nei]:
+                if dist[minNode] + weight < dist[nei]:
+                    dist[nei] = dist[minNode] + weight
+
+    return dist
+```
+
+**🔁 Dijkstra Flow**
+```py
+Pick smallest distance node
+Mark visited
+Update neighbors
+Repeat
+```
+
+**⏱ Time**
+```py
+O(E log V) -> with Heap
+
+O(n2) or O(|V|2)
+```
+
+---
+
+#### **2️⃣ BELLMAN-FORD — Basic Structure:**
+
+**🎯 When to Use:**
+- Negative weights allowed
+- Limited edges
+- Need cycle detection
+
+**When not Work:**\
+- It will `not work` in `Negative Weighted Cycle`
+- The Relaxation happens even after (n - 1) times
+- `But` we can check the -ve Weighted Cycle, by relaxing one more time and check wheather the Cost Changes
+
+**🧠 Core Idea:**\
+Relax all edges V-1 times.
+
+
+**Relax means: [Simply Updating the Node Distance]**
+```py
+if dist[u] + weight < dist[v]
+    update dist[v] = dist[u] + weight
+```
+
+**No.of Edgets:**\
+> |E| = n(n - 1) / 2
+
+**Pure Skeleton:**
+```py
+def bellmanFord(n, edges, src):
+
+    # Step 1: Initialize distances
+    dist = [float('inf')] * n
+    dist[src] = 0
+
+    # Step 2: Relax edges n-1 times
+    for _ in range(n - 1):
+
+        for u, v, w in edges:
+
+            if dist[u] != float('inf') and dist[u] + w < dist[v]:
+                dist[v] = dist[u] + w
+
+    return dist
+```
+
+🔁 Bellman-Ford Flow
+```py
+Repeat V-1 times:
+    Try improving every edge
+```
+
+**⏱ Time**
+```py
+O(|E| |E| - 1)
+O(V * E)
+```
+---
+
+#### 🔥 3️⃣ KEY DIFFERENCE:
+
+| Feature         | Dijkstra | Bellman-Ford |
+| --------------- | -------- | ------------ |
+| Data Structure  | Heap     | Loop         |
+| Negative edges  | ❌ No     | ✅ Yes        |
+| Speed           | Faster   | Slower       |
+| Edge relaxation | Greedy   | Systematic   |
+
+---
+#### 🧠 Visual Understanding:
+
+**Dijkstra**
+
+Like GPS:
+
+```
+Always go to nearest unexplored city.
+Bellman-Ford
+```
+
+**Bellman-Ford**
+
+Like:
+```
+Try all roads again and again until no improvement.
+```
+
+#### 🎯 What Are Dijkstra & Bellman-Ford Actually Solving?
+
+They solve this problem:
+> Single Source Shortest Path (SSSP)
+
+Meaning:
+```
+From ONE source node,
+find the minimum cost/distance
+to reach EVERY other node.
+```
+
+
+#### 🧩 Big Picture
+
+**1️⃣ Unweighted graph** -> *BFS*
+
+**2️⃣ Weighted positive graph** -> *Dijkstra*
+
+**3️⃣ Weighted with negatives or constraints** -> *Bellman-Ford*
+
+
+---
+---
+### 64. Cheapest Flights Within K Stops [787]
+There are `n` cities connected by some number of flights. You are given an array `flights` where `flights[i] = [fromi, toi, pricei]` indicates that there is a flight from city `fromi` to city `toi` with cost `pricei`.
+
+You are also given three integers `src`, `dst`, and `k`, return the cheapest price from `src` to `dst` with at most `k` stops. If there is no such route, return `-1`.
+
+
+*Example 1:*\
+Input: n = 4, flights = [[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]], src = 0, dst = 3, k = 1\
+Output: 700\
+Explanation:\
+The graph is shown above.\
+The optimal path with at most 1 stop from city 0 to 3 is marked in red and has cost 100 + 600 = 700.\
+Note that the path through cities [0,1,2,3] is cheaper but is invalid because it uses 2 stops.
+
+*Example 2:*\
+Input: n = 3, flights = [[0,1,100],[1,2,100],[0,2,500]], src = 0, dst = 2, k = 1\
+Output: 200\
+Explanation:\
+The graph is shown above.\
+The optimal path with at most 1 stop from city 0 to 2 is marked in red and has cost 100 + 100 = 200.
+
+*Example 3:*\
+Input: n = 3, flights = [[0,1,100],[1,2,100],[0,2,500]], src = 0, dst = 2, k = 0\
+Output: 500\
+Explanation:\
+The graph is shown above.\
+The optimal path with no stops from city 0 to 2 is marked in red and has cost 500.
+
+
+**Code Solution:**
+```python
+# ------------- Dijsktra ------------
+class Solution:
+    def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, k: int) -> int:
+        
+        minHeap = [(0, src, 0)] # cost, node, step
+
+        while minHeap:
+            cost, node, stops = heapq.heappop(minHeap)
+
+            if node == dst: return cost
+
+            if stops <= k:
+                for u, v, weightPrice in flights:
+                    if u == node:
+                        heapq.heappush(minHeap, (cost + weightPrice, v, stops + 1))
+
+        return -1
+
+# ------------ Belman Ford ------------
+class Solution:
+    def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, k: int) -> int:
+        
+        prices = [float('inf')] * n
+        prices[src] = 0
+
+        for _ in range(k + 1):
+            # Because updating prices directly would allow using more than k edges in a single iteration.
+            # We are using Temp
+            temp = prices.copy()
+
+            for u, v, cost in flights:
+                if prices[u] == float('inf'): continue
+
+                if (prices[u] + cost) < temp[v]:
+                    temp[v] = (prices[u] + cost)
+
+            prices = temp
+        
+        return -1 if prices[dst] == float('inf') else prices[dst]
+```
+
+
+---
+### 65. Course Schedule [207]
+There are a total of `numCourses` courses you have to take, labeled from `0` to `numCourses - 1`. You are given an array `prerequisites` where `prerequisites[i] = [ai, bi]` indicates that you must take course `bi` first if you want to take course `ai`.
+
+- For example, the pair `[0, 1]`, indicates that to take course `0` you have to first take course `1`.
+
+Return `true` if you can finish all courses. Otherwise, return `false`.
+
+
+*Example 1:*\
+Input: numCourses = 2, prerequisites = [[1,0]]\
+Output: true\
+Explanation: There are a total of 2 courses to take.\
+To take course 1 you should have finished course 0. So it is possible.
+
+*Example 2:*\
+Input: numCourses = 2, prerequisites = [[1,0],[0,1]]\
+Output: false\
+Explanation: There are a total of 2 courses to take.\
+To take course 1 you should have finished course 0, and to take course 0 you should also have finished course 1. So it is impossible.
+
+**Complexity:**
+```py
+Time: O(V + E)
+Space: O(V + E)
+```
+
+
+**Code Solution:**
+```python
+class Solution:
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        # create graph
+        graph = {course: [] for course in range(numCourses)}
+        for course, pre in prerequisites:
+            graph[course].append(pre)
+
+        # run iterative DFS and check for any cycles
+        for course in range(numCourses):
+            stack = [(course, set())]
+            while stack:
+                curCourse, visited = stack.pop()
+                
+                # cycle detected
+                if curCourse in visited: return False
+
+                # Adding curCourse in Visited
+                visited.add(curCourse)
+
+                for pre in graph[curCourse]:
+                    # Adding visited to pre-requests
+                    stack.append((pre, visited.copy()))
+
+            graph[course] = [] # remove course
+
+        return True
+
+# ------------ Recursive [Faster] --------------
+class Solution:
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        # Build graph
+        graph = {course: [] for course in range(numCourses)}
+        for course, pre in prerequisites:
+            graph[course].append(pre)
+
+        visiting = set()   # nodes in current DFS path
+        visited = set()    # nodes already processed (no cycle)
+
+        def dfs(course):
+            # If already fully processed
+            if course in visited:
+                return True
+            
+            # If currently in recursion stack → cycle
+            if course in visiting:
+                return False
+
+            visiting.add(course)
+
+            for pre in graph[course]:
+                if not dfs(pre):
+                    return False
+
+            visiting.remove(course)
+            visited.add(course)   # mark as safe
+            return True
+
+        # Check all courses
+        for course in range(numCourses):
+            if not dfs(course):
+                return False
+
+        return True
 ```
